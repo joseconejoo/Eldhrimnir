@@ -1,0 +1,51 @@
+{% extends 'index2.html' %}
+{% load humanize %}
+{% load myfilters %}
+
+
+
+
+
+{% block title %} Login {% endblock %}
+
+{% block content1 %}
+{% comment %}
+.bg-bubbles li {
+	position: sticky;
+}
+basicamente, hay que cambiar las position del style
+{% endcomment %}
+<div class="container">
+	<h1>Aldea Universitaria</h1>
+	
+<form class="form" method="post">
+		{% for field in form %}
+
+		{% csrf_token %}
+		<div class="errores">
+		</div>
+		{% if forloop.counter == 1%}
+	    {{field|login1:''}}
+
+		{% endif %}
+		{% if forloop.counter == 2%}
+		{{field|login2:''}} 
+		{% endif %}
+		{% if forloop.counter == 3%}
+		{{field|login3:''}} 
+		{% endif %}
+		<p></p>
+		{% if field.help_text %}
+
+		Aun no :v
+		<p class="help">{{ field.help_text|safe }}</p>
+		{% endif %}
+
+		{% endfor %}
+		<input type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" class="" placeholder="Cédula" required="" id="id_username">
+		<button type="submit" id="login-button">Registrarse</button>
+
+	</form>
+	<h5 class="credits"> <a href="#">Créditos</a> </h5>
+</div>
+{% endblock %}

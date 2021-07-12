@@ -1,0 +1,44 @@
+{% extends 'index2.html' %}
+{% load humanize %}
+{% load myfilters %}
+
+
+
+
+
+{% block title %} Login {% endblock %}
+
+{% block content1 %}
+
+<div class="container">
+	<h1>Aldea Universitaria</h1>
+	
+<form class="form" method="post">
+		{% for field in form %}
+
+		{% csrf_token %}
+		<div class="errores">
+		</div>
+		{% if forloop.counter == 1%}
+	    {{field|login1:''}}
+
+		{% endif %}
+		{% if forloop.counter == 2%}
+		{{field|login2:''}} 
+		{% endif %}
+
+		<p></p>
+		{% if field.help_text %}
+		<p class="help">{{ field.help_text|safe }}</p>
+		{% endif %}
+
+		{% endfor %}
+		<a href="{% url 'registros1' %}">
+			<button type="button" >Registrarse</button>
+		</a>
+		<button type="submit" id="login-button">Iniciar Sesión</button>
+
+	</form>
+	<h5 class="credits"> <a href="#">Créditos</a> </h5>
+</div>
+{% endblock %}

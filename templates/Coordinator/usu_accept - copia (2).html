@@ -1,0 +1,155 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block cssend %}
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<br>
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-md-12 text-center">
+        <h1>Aceptación de usuarios</h1>
+      </div>
+      {% comment %}
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">DataTables</li>
+        </ol>
+      </div>
+      {% endcomment %}
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- /.card-header -->
+          <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Nº</th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Aprobar</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Trident</td>
+                  <td>Internet
+                    Explorer 4.0
+                  </td>
+                  <td>Win 95+</td>
+                  <td> 4</td>
+                </tr>
+                <tr>
+                  <td>Trident</td>
+                  <td>Internet
+                    Explorer 5.0
+                  </td>
+                  <td>Win 95+</td>
+                  <td>5</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                {% comment %}
+                <tr>
+                  <th>Rendering engine</th>
+                  <th>Browser</th>
+                  <th>Platform(s)</th>
+                  <th>Engine version</th>
+                </tr>
+                {% endcomment %}
+              </tfoot>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div>
+  <!-- /.container-fluid -->
+</section>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block jsend %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script type="text/javascript">
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+  });
+
+  $(function () {
+
+    var wa1 = $('#example1_info');
+
+    console.log($("#example1_filter label").text());
+    //$("#example1_filter label").innerHTML('hola');
+    //console.log(document.getElementById('example1_filter').childNodes[0].childNodes[0].nodeValue="Buscar: ");
+
+    document.getElementById('example1_filter').childNodes[0].childNodes[0].nodeValue="Buscar: "
+    document.getElementById('example1_length').childNodes[0].childNodes[0].nodeValue="Mostrar: "
+    document.getElementById('example1_length').childNodes[0].childNodes[2].nodeValue=" Resultados "
+
+    function checkChanged() {
+      let wa4 = $('#example1 .odd');
+      let wa2 = $('#example1_previous');
+      let wa3 = $('#example1_next');
+      wa1.html(wa1.html().replace(' to ',' - '));
+      wa1.html(wa1.html().replace('Showing','Mostrando'));
+      wa1.html(wa1.html().replace(' of ',' de '));
+      wa1.html(wa1.html().replace('entries','entradas'));
+      wa1.html(wa1.html().replace('filtered from','filtradas de'));
+      wa1.html(wa1.html().replace(' total ',' totales '));
+      wa1.html(wa1.html().replace(' totales entradas',' entradas totales'));
+
+
+      wa2.html(wa2.html().replace('Previous','Anterior'));
+      wa3.html(wa3.html().replace('Next','Siguiente'));
+      if (wa4.text()) {
+        wa4.html(wa4.html().replace('No matching records found','No hay resultados encontrados'));
+      }
+      setTimeout(checkChanged, 0.3);
+    }
+    setTimeout(checkChanged, 0.3);
+
+    //wa1.replace('Search:' g,'hola');
+  });
+</script>
+{% endblock %}

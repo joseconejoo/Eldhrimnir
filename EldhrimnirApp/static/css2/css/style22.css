@@ -1,0 +1,230 @@
+.unalin {
+	display: table;
+  white-space: nowrap;
+}
+.unalin2 {
+	display: inline-block;
+}
+.centrartodo {
+	white-space: nowrap;
+}
+
+/* modal  bols*/
+
+
+.modal-dialog button {
+  margin-top: 20%;
+  background: white;
+  color:black;
+  border-color: black;
+}
+
+
+.modal-dialog button:hover {
+  background: rgba(0, 0, 0,0.08);
+  color:black;
+  border-color: black;
+}
+
+.modal-dialog button:active,.modal-dialog button:target,.modal-dialog button:focus,.modal-dialog button:active:focus{
+  background: rgba(0, 0, 0,0.12);
+  border-color: black ;
+  color:black;
+  outline: 0 none;
+  box-shadow: none ;
+}
+
+.modal-dialog .close{
+  color: black;
+  font-size: 23px;
+}
+
+.modal-content {
+  background: transparent;
+}
+
+.modal-footer button {
+  background: white;
+}
+
+.main-footer2 {
+  background: #333;
+  border-top: none;
+}
+
+.mostmenu1 {
+  display: list-item;
+}
+
+.centrar_m {
+  margin-left: 20%;
+}
+
+.ordernartext {
+  white-space: normal;
+}
+
+.botonPer {
+  color: white;
+  background : rgba(0,0,0,0.10);
+}
+.botonPer:hover, .botonPer:active, .botonPer:focus {
+  color: white;
+  background : rgba(0,0,0,0.18);
+}
+.he100 {
+  height: 100%;
+}
+
+.botonModal button {
+  margin-top: 0%;
+}
+
+.margender {
+  transform: translate(800%,0%);
+}
+.aumentoLetra {
+  font-size: 1.25rem;
+}
+
+.centrar_detalles_notif {
+  margin-left: 25%;
+}
+.detalles_notif_top {
+  margin-top: 5%;
+}
+
+.min-widthAtenderNotif {
+  width: 50%;
+}
+
+.min-widthasisInf{
+  width: 50%;
+}
+
+.no_mostrar_form {
+  display: none;
+}
+
+.a_not_blue {
+  color: #e6e6e6;
+}
+
+.a_not_blue:hover {
+  color: #e6e6e6;
+}
+
+.a_not_blue2 {
+  color: white;
+}
+
+.a_not_blue2:hover {
+  color: white;
+}
+
+.text_block_import {
+  white-space: nowrap;
+}
+.dropdown_perf {
+  right: 90%;
+}
+
+
+.search-box1 {
+  border: solid 6px  #cc9900;
+  /* BuscadorColorBordes*/
+  display: inline-block;
+  position: relative;
+  border-radius: 50px;
+}
+.search-box1 input[type="text"] {
+  font-family: Raleway, sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  width: 50px;
+  height: 50px;
+  padding: 5px 40px 5px 10px;
+  border: none;
+  box-sizing: border-box;
+  border-radius: 50px;
+  transition: width 800ms cubic-bezier(0.5, -0.5, 0.5, 0.5) 600ms;
+
+  /* BuscadorBackground*/
+  background-color: rgba(255,255,255,0.93);
+  color: black;
+}
+.search-box1 input[type="text"]:focus {
+  outline: none;
+}
+.search-box1 input[type="text"]:focus, .search-box1 input[type="text"]:not(:placeholder-shown) {
+  width: 300px;
+  transition: width 800ms cubic-bezier(0.5, -0.5, 0.5, 1.5);
+}
+.search-box1 input[type="text"]:focus + span, .search-box1 input[type="text"]:not(:placeholder-shown) + span {
+  bottom: 13px;
+  right: 10px;
+  transition: bottom 300ms ease-out 800ms, right 300ms ease-out 800ms;
+}
+.search-box1 input[type="text"]:focus + span:after, .search-box1 input[type="text"]:not(:placeholder-shown) + span:after {
+  top: 0;
+  right: 10px;
+  opacity: 1;
+  transition: top 300ms ease-out 1100ms, right 300ms ease-out 1100ms, opacity 300ms ease 1100ms;
+}
+.search-box1 span {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: -13px;
+  right: -15px;
+  transition: bottom 300ms ease-out 300ms, right 300ms ease-out 300ms;
+}
+.search-box1 span:before, .search-box1 span:after {
+  content: '';
+  height: 25px;
+  /* BuscadorColorX*/
+  border-left: solid 6px #cc9900;
+  position: absolute;
+  transform: rotate(-45deg);
+}
+.search-box1 span:after {
+  transform: rotate(45deg);
+  opacity: 0;
+  top: -20px;
+  right: -10px;
+  transition: top 300ms ease-out, right 300ms ease-out, opacity 300ms ease-out;
+}
+.no_back_item:active{
+  background-color: rgba(0, 0, 0,0.12);
+}
+
+.wid100{
+  width: 100%;
+  padding-right: 100%;
+}
+
+.no_pad {
+  padding-right: 0;
+  padding-left: 0;
+  position: initial;
+}
+
+.muchaslineas {
+  white-space: normal;
+  display: contents;
+}
+
+.no_cursor {
+  cursor: no-drop;
+}
+
+.redondear_borde{
+  border-radius: 2rem 2rem 2rem 2rem;
+}
+
+.firmaax {
+  display: none;
+}
