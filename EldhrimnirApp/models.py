@@ -7,7 +7,16 @@ from django.utils import timezone
 
 # Create your models here.
 
+class NivelesNum2(models.Model):
+	nivel_num = models.IntegerField(primary_key = True, unique= True)
+	nom_nivel = models.CharField(max_length=200)
+	def __str__(self):
+		return str(self.nom_nivel)
 
+class NivelUsu(models.Model):
+	user = models.OneToOneField('auth.User',on_delete=models.CASCADE, primary_key=True, unique=True)
+	nivel_usu = models.ForeignKey(NivelesNum2,on_delete=models.CASCADE, blank=True)
+   
 class NivelesNum(models.Model):
 	usuario = models.OneToOneField('auth.User',on_delete=models.CASCADE, primary_key=True, unique=True)
 	coord = models.BooleanField(default=False)
@@ -23,7 +32,7 @@ class Datos1(models.Model):
 	apellido = models.CharField(validators=[apellVer],max_length=200)
 	fedicion = models.DateTimeField(blank=True, null=True)
 	email = models.EmailField(null=True)
-	residencia = models.CharField(max_length=200)
+	residencia = models.CharField(max_length=200, null=True)
 
 class carreras(models.Model):
 	nombVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
@@ -44,3 +53,8 @@ class materia_seccion(models.Model):
 	profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True, related_name = 'profesors')
 	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True, related_name = 'user_edits')
 	date_edit = models.DateTimeField(blank=True)
+
+
+class MateriasEstu(models.Model):
+	student = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+	materia = models.ForeignKey(materia_seccion,on_delete=models.CASCADE)

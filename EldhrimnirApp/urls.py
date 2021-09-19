@@ -14,6 +14,10 @@ urlpatterns = [
 
     path('carreras', views.carreras_list, name='carreras_list'),
     path('carrera/<int:pk>', views.carrera_detal, name='carrera_detal'),
+    #to add user
     path('carrera/seccion/<int:pk>', views.seccion_carrera, name='seccion_carrera'),
+
+    path('api/usuadd/<int:type1>/<int:pk>', views.usu_add, name='usu_add'),
     
+    path('ajax/user_exist/', views.verificiar_usuario, name='verificiar_usuario'),
 ]

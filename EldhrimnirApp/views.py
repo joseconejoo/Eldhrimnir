@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import (
     REDIRECT_FIELD_NAME, get_user_model, login as auth_login,
@@ -11,12 +11,18 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .forms import materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
-from .models import materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
+from .forms import materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
+from .models import MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
+
+from .func1 import est_add_materia
 
 from django.contrib.auth.models import User
 
 from django.utils import timezone
+
+
+global nivel_estudiante
+nivel_estudiante = 3
 
 class login1(LoginView):
     template_name = 'login1.html'
@@ -190,7 +196,7 @@ def seccion_carrera(request, pk):
 	if request.method == "POST":
 		form = materia_seccion_F(request.POST)
 		#username = request.POST.get('username')
-		print('hello')
+		
 		if form.is_valid():
 			post = form.save(commit=False)
 			post.seccion = carrera_seccion.objects.get(pk = pk)
@@ -198,17 +204,82 @@ def seccion_carrera(request, pk):
 			post.date_edit = timezone.now()
 			post.save()
 			return redirect('seccion_carrera', pk=pk)
+
 	else:
 		#carreras_q = get_object_or_404(carreras, pk=pk)
 		#print(pk)
 		secciones_q = carrera_seccion.objects.get(pk = pk)
 		materias_q = materia_seccion.objects.filter(seccion = pk).order_by('id')
-		print(secciones_q)
-		print(materias_q)
+
 		for materia in materias_q:
-			#filter().count()
-			materia.alumnos = 0
+			materia.alumnos = MateriasEstu.objects.filter(materia = materia.pk).order_by('id').count()
 
 		form = materia_seccion_F()
+		form2 = DatosAddF()
+		#form3 = materias_listF()
 		
-		return render(request, 'CtrlEstud/seccion_carrera.html', {'users1':materias_q,'form1':form,'seccion':secciones_q})
+		return render(request, 'CtrlEstud/seccion_carrera.html', {'form2':form2,'users1':materias_q,'form1':form,'seccion':secciones_q})
+
+
+def verificiar_usuario(request):
+    #Ajax that user exist?
+    username = request.GET.get('username', None)
+    usu_ex = User.objects.filter(username__exact=username).exists()
+    data = {
+        'usuario_tomado': usu_ex
+    }
+    return JsonResponse(data)
+
+def usu_add(request,type1,pk):
+	#User student adding
+	if request.method == 'POST':
+		
+		form2 = DatosAddF(request.POST)
+
+		"""
+		materias_list = request.POST.getlist('choices')
+		print (materias_list)
+		for materia in materias_list:
+			mate = materia_seccion.objects.filter(id=materia)[0]
+			print(mate.materia_nom)
+		"""
+
+
+		#username = request.GET.get('username', None)
+		username = request.POST.get('cedula', None)
+		usu_ex = User.objects.filter(username__exact=username).exists()
+
+		# requesting fields
+
+		# if not form2, *user doesn't exist
+		# then will execute else *user exist
+		if form2.is_valid():
+			post = form2.save(commit = False)
+
+			#creating an user
+			User.objects.create_user(username=username,password=username)
+			user_to_register = User.objects.get(username=username)
+			post.usuario =  user_to_register
+			NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_estudiante) )
+			#user_to_register.NivelUsu.nivel_usu = nivel_estudiante
+			#user_to_register.save()
+			
+			post.save()
+
+			if (type1 == 1):
+				pass
+
+			#modulo de anadir materias
+
+			materias_list = request.POST.getlist('choices')
+			est_add_materia(user_to_register, materias_list)
+
+			return redirect(seccion_carrera,pk=pk)
+		else:
+			#modulo de anadir materias
+			user_to_register = User.objects.get(username=username)
+
+			materias_list = request.POST.getlist('choices')
+			est_add_materia(user_to_register, materias_list)
+
+			return redirect(seccion_carrera,pk=pk)

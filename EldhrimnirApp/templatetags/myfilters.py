@@ -7,6 +7,15 @@ def addclass(value, arg):
 
     return value.as_widget(attrs={'class': arg})
 
+
+
+
+
+@register.filter(name='subC')
+def substract_date(num1,num2):
+    return (num1 - num2)
+
+
 """
 def addcss(value, arg):
     css_classes = value.field.widget.attrs.get('class', '').split(' ')
@@ -64,3 +73,24 @@ def addclass(value, arg):
 @register.filter(name='materiaF1')
 def addclass(value, arg):
     return value.as_widget(attrs={'class': arg,"placeholder": "Nombre de la materia"})
+
+@register.filter(name='datosAddF1')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre",'id':'name1'})
+
+
+@register.filter(name='datosAddF2')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg,"placeholder": "Apellido",'id':'lastname1'})
+
+
+@register.filter(name='datosTeachAddF1')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre",'id':'name2'})
+
+
+@register.filter(name='datosTeachAddF2')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg,"placeholder": "Apellido",'id':'lastname2'})
+
+

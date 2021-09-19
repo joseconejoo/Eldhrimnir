@@ -3,6 +3,16 @@ from django import forms
 from .models import materia_seccion, carrera_seccion, carreras ,NivelesNum, Datos1
 
 
+class materias_listF(forms.Form):
+    choices = forms.ModelMultipleChoiceField(
+        queryset = materia_seccion.objects.all(),
+        widget  = forms.CheckboxSelectMultiple,
+    )
+
+class DatosAddF(forms.ModelForm):
+	class Meta:
+		model = Datos1
+		fields = ('nombre', 'apellido')
 
 class materia_seccion_F(forms.ModelForm):
 	class Meta:

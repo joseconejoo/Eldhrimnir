@@ -399,9 +399,6 @@ Sección {{seccion.seccion_num}}
 
 
   arrayDont = ['#myModal1']
-
-  started1 = 0
-  started2 = 0
   $('[data-toggle = "modal" ]').on("change keyup paste click", function(){
 
     data_target = $(this).attr('data-target');
@@ -416,10 +413,79 @@ Sección {{seccion.seccion_num}}
         submit1 = $("#submitFormB1");
         submit2 = $("#submitFormB2");
         console.log('estudiante')
-        if (started2 == 0) {
-          check_if_chang(userid, field1 ,field2 ,submit1 ,submit2 )
-          started2 = 1;
-        }
+        $(userid).on("change keyup paste click", function(){
+
+          url = userid.data('url');
+
+          if ($(this)) {
+            //var username = $(this).val();
+            username = $(this).val();
+          }
+          if (username_old != username) {
+            username_old = username;
+            submit1.css('display', 'none');
+            submit2.css('display', 'block');
+          }
+          //console.log(username.length);
+          // minimous number of cedula username.length
+          if (username) {
+            if (username.length > 999999) {
+              username = username.replace(new RegExp("[ ]+", "g"), "");
+              
+            }
+          }
+          if (username) {
+            
+            $.ajax({
+              url: url,
+              data: {
+                'username': username
+              },
+              dataType: 'json',
+              success: function (data) {
+                if (data.usuario_tomado) {
+                      //alert('usu existe');
+                      console.log('usu existe');
+                      field1.css('display', 'none');
+                      field2.css('display', 'none');
+                      field1.removeAttr('required');
+                      field2.removeAttr('required');
+                      submit1.css('display', 'block');
+                      submit2.css('display', 'none');
+                    }
+                    else {
+                      //alert('usu no existe');
+                      console.log('usu no existe');
+                      field1.css('display', 'block');
+                      field2.css('display', 'block');
+                      field1.attr('required', '');
+                      field2.attr('required', '');
+                      submit1.css('display', 'block');
+                      submit2.css('display', 'none');
+                    }
+                  }
+                });
+
+          }
+          else if (!username) {
+            field1.css('display', 'none');
+            field2.css('display', 'none');
+            
+            submit1.css('display', 'block');
+            submit2.css('display', 'none');
+            
+            /*
+            $("#id_username").removeClass("form-control-neg");
+            $("#spaniconBRe").removeClass("form-control-neg");
+            $("#id_username").removeClass("form-control-accept");
+            $("#spaniconBRe").removeClass("form-control-accept");
+            $("#spaniconBRe").css('display', 'none');
+            $("#iconBRe").css('display', 'none');
+            $("#iconBRe2").css('display', 'none');
+            */
+          }
+          console.log('aactivated')
+        });
       }
       else if (data_target.indexOf('3') > -1) {
         userid = $("#id_cedula2");
@@ -428,11 +494,80 @@ Sección {{seccion.seccion_num}}
         field2 = $("#lastname2");
         submit1 = $("#submitFormB3");
         submit2 = $("#submitFormB4");
-        if (started1 == 0) {
-          check_if_chang(userid, field1 ,field2 ,submit1 ,submit2 )
-          started1 = 1;
-        }
-        
+
+        $(userid).on("change keyup paste click", function(){
+
+          url = userid.data('url');
+
+          if ($(this)) {
+            //var username = $(this).val();
+            username = $(this).val();
+          }
+          if (username_old != username) {
+            username_old = username;
+            submit1.css('display', 'none');
+            submit2.css('display', 'block');
+          }
+          //console.log(username.length);
+          // minimous number of cedula username.length
+          if (username) {
+            if (username.length > 999999) {
+              username = username.replace(new RegExp("[ ]+", "g"), "");
+              
+            }
+          }
+          if (username) {
+            
+            $.ajax({
+              url: url,
+              data: {
+                'username': username
+              },
+              dataType: 'json',
+              success: function (data) {
+                if (data.usuario_tomado) {
+                      //alert('usu existe');
+                      console.log('usu existe');
+                      field1.css('display', 'none');
+                      field2.css('display', 'none');
+                      field1.removeAttr('required');
+                      field2.removeAttr('required');
+                      submit1.css('display', 'block');
+                      submit2.css('display', 'none');
+                    }
+                    else {
+                      //alert('usu no existe');
+                      console.log('usu no existe');
+                      field1.css('display', 'block');
+                      field2.css('display', 'block');
+                      field1.attr('required', '');
+                      field2.attr('required', '');
+                      submit1.css('display', 'block');
+                      submit2.css('display', 'none');
+                    }
+                  }
+                });
+
+          }
+          else if (!username) {
+            field1.css('display', 'none');
+            field2.css('display', 'none');
+            
+            submit1.css('display', 'block');
+            submit2.css('display', 'none');
+            
+            /*
+            $("#id_username").removeClass("form-control-neg");
+            $("#spaniconBRe").removeClass("form-control-neg");
+            $("#id_username").removeClass("form-control-accept");
+            $("#spaniconBRe").removeClass("form-control-accept");
+            $("#spaniconBRe").css('display', 'none');
+            $("#iconBRe").css('display', 'none');
+            $("#iconBRe2").css('display', 'none');
+            */
+          }
+          console.log('aactivated')
+        });
         console.log('profesor')
       }
       console.log($(this).attr('data-target'))
@@ -446,81 +581,7 @@ Sección {{seccion.seccion_num}}
 
   var username_old = '';
   
-  function check_if_chang(userid, field1 ,field2 ,submit1 ,submit2 ) {
-    $(userid).on("change keyup paste click", function(){
 
-      url = userid.data('url');
-
-      if ($(this)) {
-        //var username = $(this).val();
-        username = $(this).val();
-      }
-      if (username_old != username) {
-        username_old = username;
-        submit1.css('display', 'none');
-        submit2.css('display', 'block');
-      }
-      //console.log(username.length);
-      // minimous number of cedula username.length
-      if (username) {
-        if (username.length > 999999) {
-          username = username.replace(new RegExp("[ ]+", "g"), "");
-          
-        }
-      }
-      if (username) {
-        
-        $.ajax({
-          url: url,
-          data: {
-            'username': username
-          },
-          dataType: 'json',
-          success: function (data) {
-            if (data.usuario_tomado) {
-                  //alert('usu existe');
-                  console.log('usu existe');
-                  field1.css('display', 'none');
-                  field2.css('display', 'none');
-                  field1.removeAttr('required');
-                  field2.removeAttr('required');
-                  submit1.css('display', 'block');
-                  submit2.css('display', 'none');
-                }
-                else {
-                  //alert('usu no existe');
-                  console.log('usu no existe');
-                  field1.css('display', 'block');
-                  field2.css('display', 'block');
-                  field1.attr('required', '');
-                  field2.attr('required', '');
-                  submit1.css('display', 'block');
-                  submit2.css('display', 'none');
-                }
-              }
-            });
-
-      }
-      else if (!username) {
-        field1.css('display', 'none');
-        field2.css('display', 'none');
-        
-        submit1.css('display', 'block');
-        submit2.css('display', 'none');
-        
-        /*
-        $("#id_username").removeClass("form-control-neg");
-        $("#spaniconBRe").removeClass("form-control-neg");
-        $("#id_username").removeClass("form-control-accept");
-        $("#spaniconBRe").removeClass("form-control-accept");
-        $("#spaniconBRe").css('display', 'none');
-        $("#iconBRe").css('display', 'none');
-        $("#iconBRe2").css('display', 'none');
-        */
-      }
-      console.log('aactivated')
-    });
-  }
   
   //old
 
