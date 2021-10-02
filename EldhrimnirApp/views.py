@@ -12,9 +12,9 @@ from django.contrib.auth import (
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .forms import materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
-from .models import MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
+from .models import MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
 
-from .func1 import est_add_materia
+from .func1 import prof_add_materia, est_add_materia
 
 from django.contrib.auth.models import User
 
@@ -23,6 +23,8 @@ from django.utils import timezone
 
 global nivel_estudiante
 nivel_estudiante = 3
+nivel_control_estudios = 1
+nivel_profesor = 4
 
 class login1(LoginView):
     template_name = 'login1.html'
@@ -213,6 +215,8 @@ def seccion_carrera(request, pk):
 
 		for materia in materias_q:
 			materia.alumnos = MateriasEstu.objects.filter(materia = materia.pk).order_by('id').count()
+			if (MateriaTeacher.objects.filter(materia = materia.pk).exists() ):
+				materia.profesor = MateriaTeacher.objects.filter(materia = materia.pk)[0].profesor
 
 		form = materia_seccion_F()
 		form2 = DatosAddF()
@@ -230,7 +234,7 @@ def verificiar_usuario(request):
     }
     return JsonResponse(data)
 
-def usu_add(request,type1,pk):
+def usu_add(request, type1, pk, pk_materia):
 	#User student adding
 	if request.method == 'POST':
 		
@@ -260,26 +264,35 @@ def usu_add(request,type1,pk):
 			User.objects.create_user(username=username,password=username)
 			user_to_register = User.objects.get(username=username)
 			post.usuario =  user_to_register
-			NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_estudiante) )
 			#user_to_register.NivelUsu.nivel_usu = nivel_estudiante
 			#user_to_register.save()
+			if (type1 == 1):
+				NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_estudiante) )
+			if (type1 == 2):
+				NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_profesor) )				
 			
 			post.save()
 
 			if (type1 == 1):
-				pass
+				#modulo de anadir materias
+				materias_list = request.POST.getlist('choices')
+				est_add_materia(user_to_register, materias_list)
 
-			#modulo de anadir materias
-
-			materias_list = request.POST.getlist('choices')
-			est_add_materia(user_to_register, materias_list)
+			if (type1 == 2):
+				#modulo de anadir profesor a materia
+				prof_add_materia(user_to_register ,pk_materia)
 
 			return redirect(seccion_carrera,pk=pk)
 		else:
 			#modulo de anadir materias
 			user_to_register = User.objects.get(username=username)
 
-			materias_list = request.POST.getlist('choices')
-			est_add_materia(user_to_register, materias_list)
-
+			if (type1 == 1):
+				#modulo de anadir materias
+				materias_list = request.POST.getlist('choices')
+				est_add_materia(user_to_register, materias_list)
+			if (type1 == 2):
+				#modulo de anadir profesor a materia
+				prof_add_materia(user_to_register ,pk_materia)
+				
 			return redirect(seccion_carrera,pk=pk)

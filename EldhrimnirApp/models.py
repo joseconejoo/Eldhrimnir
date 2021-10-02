@@ -50,7 +50,7 @@ class materia_seccion(models.Model):
 	nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
 	materia_nom = models.CharField(validators=[nombreVer],max_length=200)
 	seccion = models.ForeignKey(carrera_seccion, on_delete=models.CASCADE, blank=True)
-	profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True, related_name = 'profesors')
+	#profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True, related_name = 'profesors')
 	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True, related_name = 'user_edits')
 	date_edit = models.DateTimeField(blank=True)
 
@@ -58,3 +58,7 @@ class materia_seccion(models.Model):
 class MateriasEstu(models.Model):
 	student = models.ForeignKey('auth.User',on_delete=models.CASCADE)
 	materia = models.ForeignKey(materia_seccion,on_delete=models.CASCADE)
+
+class MateriaTeacher(models.Model):
+	materia = models.OneToOneField(materia_seccion, on_delete=models.CASCADE)
+	profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True)
