@@ -46,6 +46,14 @@ class carrera_seccion(models.Model):
 	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True)
 	date_edit = models.DateTimeField(blank=True)
 
+class Tipo_Materia(models.Model):
+	id1 = models.IntegerField(primary_key = True, unique = True)
+	nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
+	Nombre = models.CharField(validators = [nombreVer], max_length = 200)
+	num_eval_min = models.IntegerField()
+	def __str__(self):
+	    return str((self.Nombre))
+
 class materia_seccion(models.Model):
 	nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
 	materia_nom = models.CharField(validators=[nombreVer],max_length=200)
@@ -53,6 +61,7 @@ class materia_seccion(models.Model):
 	#profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True, related_name = 'profesors')
 	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True, related_name = 'user_edits')
 	date_edit = models.DateTimeField(blank=True)
+	tipo_mate = models.ForeignKey(Tipo_Materia, on_delete = models.CASCADE)
 
 
 class MateriasEstu(models.Model):
@@ -62,3 +71,4 @@ class MateriasEstu(models.Model):
 class MateriaTeacher(models.Model):
 	materia = models.OneToOneField(materia_seccion, on_delete=models.CASCADE)
 	profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True)
+

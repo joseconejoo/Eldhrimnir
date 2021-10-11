@@ -44,7 +44,11 @@ Sección {{seccion.seccion_num}}
                 <tr>
                   <td>{{forloop.counter}}</td>
                   
-                  <td>{{materia.materia_nom}}</td>
+                  <td>
+                    <p class="text-left">{{materia.materia_nom}} </p>
+                    
+                    <p class="text-muted text-left">{{materia.tipo_mate}} </p>
+                  </td>
                   {% if materia.profesor %}
                   <td>{{materia.profesor.datos1.nombre}} {{materia.profesor.datos1.apellido}}</td>
                   {% elif user.nivelesnum.ctrl_est1 %}
@@ -144,7 +148,7 @@ Sección {{seccion.seccion_num}}
 
               {% endif %}
               {% if forloop.counter == 2%}
-              {{field|login2:''}} 
+              {{field|addclass:'form-control'}}
               {% endif %}
               {% if forloop.counter == 3%}
               {{field|login3:''}} 
