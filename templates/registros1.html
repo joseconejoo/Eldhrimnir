@@ -50,7 +50,12 @@ basicamente, hay que cambiar las position del style
 		<div class="errores">
 		</div>
 		{% if forloop.counter == 1%}
-	    {{field|datosF1:''}}
+
+		{% if residencia1 %}
+		{{field|datosF3:''}}    
+	    {% else %}
+		{{field|datosF1:''}}
+	    {% endif %}
 
 		{% endif %}
 		{% if forloop.counter == 2%}

@@ -11,7 +11,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .forms import materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
+from .forms import Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
 from .models import MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
 
 from .func1 import prof_add_materia, est_add_materia
@@ -54,6 +54,57 @@ def perfil_redirect(request):
 
 
 def perfil_u(request, pk):
+	condition2 = Datos1.objects.filter(usuario=pk).exists()
+	condition3 = False
+	if (condition2):
+		condition3 = Datos1.objects.get(usuario=pk).residencia
+	#if (User.objects.filter(pk=pk).exists() and Datos1.objects.get(usuario=pk).residencia):
+	if (User.objects.filter(pk=pk).exists() and (condition2 and condition3) ):
+		usu1 = User.objects.get(pk=pk)
+		dat1 = Datos1.objects.get(usuario=pk)
+		niv1 = ''
+		if NivelesNum.objects.filter(usuario=pk).exists():
+			niv1 = NivelesNum.objects.get(usuario=pk)
+
+		return render(request, 'perfil.html',{'niv1':niv1,'usu1':usu1,'dat1':dat1})
+	else:
+		#if (Datos1.objects.get(usuario=pk).nombre):
+		print (condition2,'\n\n')
+		if (condition2):
+
+			if (Datos1.objects.get(usuario=pk).nombre):
+				registred = True
+
+		else:
+			registred = False
+
+		if request.method == "POST":
+			if (registred):
+				form2= Datos2rF(request.POST)
+			else:
+				form2= DatosF(request.POST)
+
+			if form2.is_valid():
+				post2 = form2.save(commit=False)
+				post2.usuario = User.objects.get(pk=request.user.pk)
+				if (registred):
+					post2.save(update_fields=["residencia"])
+					#new to edit info
+				else:
+					post2.save()
+				#activate = True
+				#messages.success(request, 'Registro Realizado exitosamente, Debe esperar la Aprobacion del Director')
+				return redirect('perfil_u',pk=request.user.pk)
+
+		else:
+			if (registred):
+				form2= Datos2rF()
+			else:
+				form2= DatosF()
+		return render(request,'registros1.html', {'form2':form2, 'residencia1' : registred})
+
+"""
+def perfil_u(request, pk):
 	try:
 		usu1 = User.objects.get(pk=pk)
 		dat1 = Datos1.objects.get(usuario=pk)
@@ -78,7 +129,7 @@ def perfil_u(request, pk):
 
 		return render(request,'registros1.html', {'form2':form2})
 
-
+"""
 def registros1(request):
 	#formlistoption = unidad2.objects.filter().order_by('id')
 	if request.method == "POST":

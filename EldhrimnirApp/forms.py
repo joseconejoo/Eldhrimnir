@@ -47,6 +47,11 @@ class NivelesNumF1(forms.ModelForm):
 	class Meta:
 		model = NivelesNum
 		fields = {'ctrl_est1',}
+class Datos2rF(forms.ModelForm):
+	class Meta:
+		model = Datos1
+		fields = ('residencia',)
+
 class DatosF(forms.ModelForm):
 	class Meta:
 		model = Datos1
