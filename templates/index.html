@@ -104,6 +104,7 @@
           <a href="#" class="d-block">
 
             {{user.datos1.nombre}} {{user.datos1.apellido}} 
+
             {% if user.is_superuser %}
             - Coordinador de las Aldeas
             {% endif %}
@@ -111,6 +112,27 @@
             {% if user.nivelesnum.ctrl_est1 %}
             - Control de Estudios
             {% endif %}
+
+            
+            {% if not user.is_superuser %}
+            {% if user.nivelusu.nivel_usu %}
+            - {{ user.nivelusu.nivel_usu }}
+            {% endif %}
+            {% endif %}
+
+
+            {% comment %}
+            <!--
+            {% if user.is_superuser %}
+            - Coordinador de las Aldeas
+            {% endif %}
+
+            {% if user.nivelesnum.ctrl_est1 %}
+            - Control de Estudios
+            {% endif %}
+            -->
+            {% endcomment %}
+            
           </a>
           
         </div>
@@ -123,17 +145,29 @@
 
           <!-- Users Levels Options -->
           {% if user.is_superuser %}
+          <!-- administrador coordinador -->
             <li class="nav-item">
               <a href="{% url 'accept_usu1' %}" class="nav-link">
                 <i class="nav-icon fas fa-th"></i>
                 <p>
-                  Aceptar Usuarios
+                  Lista de Usuarios
                 </p>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a href="{% url 'usu_coord_creacion' %}" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  Control de Estudios
+                </p>
+              </a>
+            </li>
+            
           {% endif %}
 
-          {% if user.nivelesnum.ctrl_est1 %}
+          {% if user.nivelesnum.ctrl_est1 or user.nivelusu.nivel_usu.nivel_num == 1 %}
+          <!-- control de estudio -->
           <li class="nav-item">
             <a href="{% url 'carreras_list' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
@@ -147,13 +181,47 @@
             <a href="{% url 'accept_usu1' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
-                Profesores
+                Lista de Profesores
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Lista de Estudiantes
               </p>
             </a>
           </li>
           {% endif %}
 
-
+          {% if user.nivelusu.nivel_usu.nivel_num == 4 %}
+          <!-- Profesor -->
+          <li class="nav-item">
+            <a href="{% url 'materias_profesor' %}" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Materias asignadas
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Carga de Notas
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p class="too_long">
+                Lista de todos mis estudiantes
+              </p>
+            </a>
+          </li>
+          {% endif %}
           {% if user.estud %}
           <li class="nav-item">
             <a href="/" class="nav-link">
@@ -247,6 +315,8 @@
 {% endif %}
 
 {% block jsend %}
+{% endblock %}
+{% block jsend2 %}
 {% endblock %}
 </body>
 </html>

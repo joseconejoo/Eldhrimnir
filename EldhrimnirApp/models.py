@@ -43,7 +43,7 @@ class carreras(models.Model):
 class carrera_seccion(models.Model):
 	seccion_num = models.IntegerField(unique= True)
 	carrera = models.ForeignKey(carreras,on_delete=models.CASCADE, blank=True)
-	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True)
+	user_edit = models.ForeignKey('auth.User',on_delete=models.SET_NULL, blank=True, null = True)
 	date_edit = models.DateTimeField(blank=True)
 
 class Tipo_Materia(models.Model):
@@ -59,7 +59,7 @@ class materia_seccion(models.Model):
 	materia_nom = models.CharField(validators=[nombreVer],max_length=200)
 	seccion = models.ForeignKey(carrera_seccion, on_delete=models.CASCADE, blank=True)
 	#profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True, related_name = 'profesors')
-	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True, related_name = 'user_edits')
+	user_edit = models.ForeignKey('auth.User',on_delete=models.SET_NULL, blank=True, related_name = 'user_edits', null = True)
 	date_edit = models.DateTimeField(blank=True)
 	tipo_mate = models.ForeignKey(Tipo_Materia, on_delete = models.CASCADE)
 
@@ -72,3 +72,8 @@ class MateriaTeacher(models.Model):
 	materia = models.OneToOneField(materia_seccion, on_delete=models.CASCADE)
 	profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True)
 
+class evaluacion_materia(models.Model):
+	materia = models.ForeignKey(materia_seccion, on_delete=models.CASCADE)
+	descripcion = models.CharField(max_length=250)
+	ponderacion = models.PositiveIntegerField(validators=[MinValueValidator(5,message="Ponderación no valida."), MaxValueValidator(30,message="Ponderación no valida.")])
+	fecha = models.DateField(blank=True)

@@ -1,6 +1,43 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django import forms
-from .models import materia_seccion, carrera_seccion, carreras ,NivelesNum, Datos1
+from .models import evaluacion_materia, materia_seccion, carrera_seccion, carreras ,NivelesNum, Datos1
+
+from django.utils.translation import gettext as _
+from django.contrib.auth import (
+    authenticate, get_user_model, password_validation, backends
+)
+from django.contrib.auth.models import User
+
+class evaluacion_materiaF(forms.ModelForm):
+	class Meta:
+		model = evaluacion_materia
+		fields = ('descripcion', 'ponderacion', 'fecha')
+
+class actu_contra(forms.ModelForm):
+	password1 = forms.CharField(
+	    label=_("Password"),
+	    strip=False,
+	    widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+	    help_text=password_validation.password_validators_help_text_html(),
+	)
+	password2 = forms.CharField(
+	    label=_("Password confirmation"),
+	    widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+	    strip=False,
+	    help_text=_("Enter the same password as before, for verification."),
+	)
+
+	class Meta:
+	    model = User
+	    fields = ()
+
+	def clean(self):
+		password = self.cleaned_data.get('password2')
+		if password:
+		    try:
+		        password_validation.validate_password(password, self.instance)
+		    except forms.ValidationError as error:
+		        self.add_error('password2', error)
 
 
 class materias_listF(forms.Form):

@@ -11,20 +11,28 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .forms import Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
-from .models import MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
+from .forms import evaluacion_materiaF, actu_contra, Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
+from .models import Tipo_Materia, evaluacion_materia, MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
 
 from .func1 import prof_add_materia, est_add_materia
 
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 from django.utils import timezone
+from datetime import datetime, timedelta
 
+teorica = Tipo_Materia.objects.filter(pk=1)[0].num_eval_min
+practica = Tipo_Materia.objects.filter(pk=2)[0].num_eval_min
+teoricayprac = Tipo_Materia.objects.filter(pk=3)[0].num_eval_min
 
 global nivel_estudiante
 nivel_estudiante = 3
 nivel_control_estudios = 1
 nivel_profesor = 4
+
+def land_page(request):
+	return redirect('login1')
 
 class login1(LoginView):
     template_name = 'login1.html'
@@ -54,12 +62,26 @@ def perfil_redirect(request):
 
 
 def perfil_u(request, pk):
+
+	user = authenticate(username=request.user.username, password=request.user.username)
+	if user is not None:
+		# authenticated
+		usu_pass = False
+		print ('worked')
+	else:
+		# no correct pass
+		usu_pass = True
+		print ('failed')
+
+
+
 	condition2 = Datos1.objects.filter(usuario=pk).exists()
 	condition3 = False
+
 	if (condition2):
 		condition3 = Datos1.objects.get(usuario=pk).residencia
-	#if (User.objects.filter(pk=pk).exists() and Datos1.objects.get(usuario=pk).residencia):
-	if (User.objects.filter(pk=pk).exists() and (condition2 and condition3) ):
+	
+	if (User.objects.filter(pk=pk).exists() and (condition2 and condition3) and usu_pass):
 		usu1 = User.objects.get(pk=pk)
 		dat1 = Datos1.objects.get(usuario=pk)
 		niv1 = ''
@@ -69,39 +91,65 @@ def perfil_u(request, pk):
 		return render(request, 'perfil.html',{'niv1':niv1,'usu1':usu1,'dat1':dat1})
 	else:
 		#if (Datos1.objects.get(usuario=pk).nombre):
+		# new login password nuevo login contraseña
 		print (condition2,'\n\n')
-		if (condition2):
+		registred = None
+		if (condition2 and not condition3):
 
 			if (Datos1.objects.get(usuario=pk).nombre):
 				registred = True
 
-		else:
+		elif(not Datos1.objects.get(usuario=pk).nombre):
 			registred = False
 
 		if request.method == "POST":
-			if (registred):
+			if (registred == True):
 				form2= Datos2rF(request.POST)
-			else:
+			elif(registred == False):
 				form2= DatosF(request.POST)
+			else:
+				#form2 = False
+				form2= DatosF()
+
+			if (not usu_pass):
+				form3 = actu_contra(request.POST)
+			else:
+				#form3 = False
+				form3 = actu_contra()
 
 			if form2.is_valid():
 				post2 = form2.save(commit=False)
 				post2.usuario = User.objects.get(pk=request.user.pk)
-				if (registred):
+				if (registred == True):
 					post2.save(update_fields=["residencia"])
 					#new to edit info
-				else:
+				elif(registred == False):
 					post2.save()
 				#activate = True
 				#messages.success(request, 'Registro Realizado exitosamente, Debe esperar la Aprobacion del Director')
-				return redirect('perfil_u',pk=request.user.pk)
+			if form3.is_valid():
+				usuario = get_object_or_404(User,pk=request.user.pk)
+
+				nueva_contra = request.POST.get('password2')
+				usuario.set_password(nueva_contra)
+
+				usuario.save()
+
+
+			return redirect('login1')
 
 		else:
-			if (registred):
+			if (registred == True):
 				form2= Datos2rF()
-			else:
+			elif(registred == False):
 				form2= DatosF()
-		return render(request,'registros1.html', {'form2':form2, 'residencia1' : registred})
+			else:
+				form2 = False
+			if (not usu_pass):
+				form3 = actu_contra()
+			else:
+				form3 = False
+		return render(request,'registros1.html', {'form3':form3, 'form2':form2, 'residencia1' : registred})
 
 """
 def perfil_u(request, pk):
@@ -175,7 +223,8 @@ def registros1(request):
 
 
 def accept_usu1(request):
-	users = User.objects.filter(nivelesnum__ctrl_est1__exact=True,is_active=False).order_by('id')
+	#users = User.objects.filter(nivelesnum__ctrl_est1__exact=True,is_active=False).order_by('id')
+	users = User.objects.all().order_by('id')
 	
 	return render(request, 'coordinator/usu_accept.html',{'users1':users})
 
@@ -216,7 +265,11 @@ def carreras_list(request):
 	else:
 		carreras_q = carreras.objects.order_by('id')
 		for carrera in carreras_q:
-			carrera.secciones = 0
+			secciones_q = carrera_seccion.objects.filter(carrera = carrera.pk).order_by('id')
+			if (secciones_q.exists()):
+				carrera.secciones = secciones_q.count()	
+			else:
+				carrera.secciones = 0
 			print (carrera)
 		form_add = carreras_add()
 		carreras1 = []
@@ -239,9 +292,14 @@ def carrera_detal(request, pk):
 	else:
 		carreras_q = get_object_or_404(carreras, pk=pk)
 		secciones_q = carrera_seccion.objects.filter(carrera = pk).order_by('id')
+		
 		for seccion in secciones_q:
+			materias_q = materia_seccion.objects.filter(seccion = seccion.pk).order_by('id')
 			#filter().count()
-			seccion.alumnos = 0
+			if(materias_q.exists()):
+				seccion.alumnos = materias_q.count()
+			else:
+				seccion.alumnos = 0
 		form = carrera_seccion_F()
 		return render(request, 'CtrlEstud/carrera_detal.html', {'users1':secciones_q,'carrera': carreras_q,'form1':form})
 
@@ -288,7 +346,7 @@ def verificiar_usuario(request):
 def usu_add(request, type1, pk, pk_materia):
 	#User student adding
 	if request.method == 'POST':
-		
+		#form2 from seccion_carrera
 		form2 = DatosAddF(request.POST)
 
 		"""
@@ -334,7 +392,8 @@ def usu_add(request, type1, pk, pk_materia):
 				prof_add_materia(user_to_register ,pk_materia)
 
 			return redirect(seccion_carrera,pk=pk)
-		else:
+		elif(User.objects.filter(username=username).exists()):
+			#form special
 			#modulo de anadir materias
 			user_to_register = User.objects.get(username=username)
 
@@ -342,8 +401,153 @@ def usu_add(request, type1, pk, pk_materia):
 				#modulo de anadir materias
 				materias_list = request.POST.getlist('choices')
 				est_add_materia(user_to_register, materias_list)
+				#Modulo para poner nivel de usuario al de estudiante
+				#POR HACER
+				nivel = NivelesNum2.objects.get(pk=nivel_estudiante)
 			if (type1 == 2):
 				#modulo de anadir profesor a materia
 				prof_add_materia(user_to_register ,pk_materia)
+				#Modulo para poner nivel de usuario al de estudiante
+				#por hacer
+				nivel = NivelesNum2.objects.get(pk=nivel_profesor)
+
+			#to test
+			nivel_usu1x = NivelUsu.objects.filter(user = user_to_register)
+			if nivel_usu1x.exists() :
+				nivel_usu1x = nivel_usu1x[0]
+				nivel_usu1x.nivel_usu = nivel
+				nivel_usu1x.save()
+			else:
+				NivelUsu.objects.create(user=user_to_register , nivel_usu= nivel )
 				
 			return redirect(seccion_carrera,pk=pk)
+		return redirect(seccion_carrera,pk=pk)
+
+def usu_add_ctrl_estud(request):
+	if request.method == 'POST':
+		# form2 from usu_coord_creacion
+		form2 = DatosAddF(request.POST)
+		username = request.POST.get('cedula', None)
+		usu_ex = User.objects.filter(username__exact=username).exists()
+
+		if form2.is_valid():
+			post = form2.save(commit = False)
+
+			#creating an user
+			User.objects.create_user(username=username,password=username)
+			user_to_register = User.objects.get(username=username)
+			post.usuario =  user_to_register
+			#user_to_register.NivelUsu.nivel_usu = nivel_estudiante
+			#user_to_register.save()
+
+
+			NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_control_estudios) )
+			
+			post.save()
+
+			return redirect(usu_add_ctrl_estud)
+		elif(User.objects.filter(username=username).exists()):
+			#form special
+			#modulo de anadir materias
+			user_to_register = User.objects.get(username=username)
+			# nivel a convertir
+			nivel = NivelesNum2.objects.get(pk=nivel_control_estudios)
+			#to test
+			nivel_usu1x = NivelUsu.objects.filter(user = user_to_register)
+			if nivel_usu1x.exists() :
+				nivel_usu1x = nivel_usu1x[0]
+				nivel_usu1x.nivel_usu = nivel
+				nivel_usu1x.save()
+			else:
+				NivelUsu.objects.create(user=user_to_register , nivel_usu= nivel )
+
+			return redirect(usu_add_ctrl_estud)
+
+
+	return redirect(usu_coord_creacion)
+def materias_profesor(request):
+	materias_q = materia_seccion.objects.filter(materiateacher__profesor = request.user.pk).order_by('id')
+	for materia in materias_q:
+		materia.alumnos = MateriasEstu.objects.filter(materia = materia.pk).order_by('id').count()
+
+	return render(request, 'Profesor/carreras_asignadas.html', {'users1': materias_q})
+
+def carga_evaluaciones(request, pk):
+	# Profesor 
+	materia_actual = materia_seccion.objects.filter(pk = pk).order_by('id')[0]
+	if request.method == 'POST':
+		form = evaluacion_materiaF(request.POST)
+		if form.is_valid():
+			post = form.save(commit=False)
+			post.materia = materia_actual
+
+			evaluaciones_q = evaluacion_materia.objects.filter(materia = pk).order_by('id')
+			total_percent = 0
+			total_percent += post.ponderacion
+			for evaluacion in evaluaciones_q:
+				total_percent += evaluacion.ponderacion
+
+			if (total_percent > 100 ):
+				messages.error(request, 'Porcentaje total no puede ser mayor al 100 %')
+				print('not allowed')
+				pass
+			else:
+				post.save()
+
+			return redirect('carga_evaluaciones', pk=pk)
+
+	else:
+		form = evaluacion_materiaF()
+		materias_q = materia_actual		
+		#messages.success(request, 'Fecha no valida.')
+		min_evals = materia_actual.tipo_mate.num_eval_min
+		# working on min_evals*5 that is min value for evaluations
+		evaluaciones_q = evaluacion_materia.objects.filter(materia = pk).order_by('id')
+		total_percent = 0
+		total_evals = 0
+		for evaluacion in evaluaciones_q:
+			total_percent += evaluacion.ponderacion
+			total_evals += 1
+
+		print (total_percent, 'totalpercent')
+		verif1 = min_evals-total_evals
+		print (verif1)
+		to_reajust = 0
+		if (verif1 > 0):
+			# multiply by 5 because is the minimun
+			verif1 = (verif1 - 1)
+			total_percent += verif1 * 5
+			print (total_percent)
+			to_reajust = verif1 * 5
+
+		#reajust total_percent to print
+		materias_q.total_percent = total_percent - to_reajust
+
+		if (total_percent < 70):
+			max_value = 30
+		else:
+			max_value = (-total_percent) + 100
+
+		date_min_value = timezone.now() + timedelta(1)
+		date_min_value = str(date_min_value.day) +'/'+ str(date_min_value.month)+'/'+ str(date_min_value.year)
+		print(date_min_value)
+		allow_anadir_eval = True
+		if (materias_q.total_percent == 100):
+			allow_anadir_eval = False
+
+		return render(request, 'Profesor/carga_evaluaciones.html', {'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
+
+def usu_coord_creacion(request):
+	for x in range(1):
+		ctrl_stud  = User.objects.filter(nivelusu__nivel_usu = nivel_control_estudios)
+		cargo = NivelesNum2.objects.get(pk = nivel_control_estudios)
+		print (ctrl_stud)
+		if (not ctrl_stud.exists()):
+			ctrl_stud = [{'cargo1':cargo.nom_nivel,'materia_nom':'','asd':'asd'}]
+		else:
+			for user in ctrl_stud:
+				user.cargo1 = cargo.nom_nivel
+
+
+	form2 = DatosAddF()	
+	return render(request, 'Coordinator/anadir_usu.html', {'users1' : ctrl_stud, 'form2':form2 })

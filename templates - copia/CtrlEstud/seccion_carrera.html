@@ -51,7 +51,7 @@ Sección {{seccion.seccion_num}}
                   </td>
                   {% if materia.profesor %}
                   <td>{{materia.profesor.datos1.nombre}} {{materia.profesor.datos1.apellido}}</td>
-                  {% elif user.nivelesnum.ctrl_est1 or user.nivelusu.nivel_usu.nivel_num == 1  %}
+                  {% elif user.nivelesnum.ctrl_est1 %}
                   <td>
                     <a class="btn btn-primary blancColor" data-toggle="modal" data-target="#myModal3" data-href="{% url 'usu_add' 2 seccion.carrera.pk materia.pk  %}" data-pestana_nom="Agregar Profesor" data-switch1 = '1'> Añadir Profesor</a>
 
@@ -397,7 +397,7 @@ Sección {{seccion.seccion_num}}
   {% endblock %}
 
 
-  {% block jsend2 %}
+  {% block jsend %}
 
 <script type="text/javascript">
 

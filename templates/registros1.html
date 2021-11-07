@@ -19,6 +19,10 @@ basicamente, hay que cambiar las position del style
 	<h1>Aldea Universitaria</h1>
 	
 <form class="form" method="post">
+		{% if user %}
+		<input class="disabled1" value="{{user.username | intcomma }}" disabled></input>
+		{% endif %}
+
 		{% for field in form %}
 
 		{% csrf_token %}
@@ -44,6 +48,8 @@ basicamente, hay que cambiar las position del style
 
 
 		{% endfor %}
+
+		{% if form2 %}
 		{% for field in form2 %}
 
 		{% csrf_token %}
@@ -74,7 +80,32 @@ basicamente, hay que cambiar las position del style
 
 
 		{% endfor %}
+		{% endif %}
 
+		{% if form3 %}
+			{% for field in form3 %}
+
+			{% csrf_token %}
+			<div class="errores">
+			</div>
+			{% if forloop.counter == 1%}
+			{{field|login4:''}} 
+			{% endif %}
+			{% if forloop.counter == 2%}
+			{{field|login3:''}} 
+			{% endif %}
+			<p></p>
+			{% comment %}
+			{% if field.help_text %}
+			Aun no :v
+			<p class="help">{{ field.help_text|safe }}</p>
+			{% endif %}
+			{% endcomment %}
+
+
+			{% endfor %}
+			
+		{% endif %}
 
 		
 		{% comment %}

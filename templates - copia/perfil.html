@@ -1,12 +1,13 @@
 {% extends 'index.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <div class="container-fluid">
     <div class="row mb-2">
-      <div class="col-sm-6">
+      <div class="col-md-12 text-center">
         <h1>Pérfil</h1>
       </div>
       <div class="col-sm-6">
@@ -38,11 +39,29 @@
               {% endcomment %}
             </div>
 
-            <h3 class="profile-username text-center">Nina Mcintire</h3>
-            {% comment %}
-            <p class="text-muted text-center">Software Engineer</p>
-            {% endcomment %}
+            <h3 class="profile-username text-center">{{dat1.nombre}} {{dat1.apellido}}</h3>
+            <!--
+              users level range
+            -->
+            {% if usu1.is_superuser %}
+            <p class="text-muted text-center">Coordinador de las Aldeas</p>
+            {% endif %}
+
+            {% if niv1.ctrl_est1 %}
+            <p class="text-muted text-center">Control de Estudios</p>
+            {% endif %}
+
+            {% if usu1.nivelusu.nivel_usu.nivel_num == 4%}
+            <p class="text-muted text-center">Profesor</p>
+            {% endif %}
+
+            {% if niv1.estud %}
             <ul class="list-group list-group-unbordered mb-3">
+              {% comment %}
+              <li class="list-group-item text-center">
+                <a class="" style="width: 100%;">Estudiante</a>
+              </li>
+              {% endcomment %}
               <li class="list-group-item">
                 <b>Carrera</b> <a class="float-right">Histocitotecnologia</a>
               </li>
@@ -53,6 +72,9 @@
                 <b>Usuario Activo</b> <a class="float-right">Si</a>
               </li>
             </ul>
+            {% endif %}
+
+            
             {% comment %}
             <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
             {% endcomment %}
@@ -85,14 +107,14 @@
                   <strong><i class="fad fa-id-card mr-1"></i> Cédula</strong>
 
                   <p class="">
-                    25.132.102
+                    {{usu1.username | intcomma }}
                   </p>
 
                   <hr>
 
                   <strong><i class="fad fa-map-marked-alt mr-1"></i> Lugar de Residencia</strong>
 
-                  <p class="">Guanare, calle 14 entre 4 y 5</p>
+                  <p class="">{{dat1.residencia}}</p>
 
                   <hr>
                   <strong><i class="fad fa-birthday-cake mr-1"></i> Fecha de Nacimiento</strong>

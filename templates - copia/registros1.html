@@ -25,7 +25,7 @@ basicamente, hay que cambiar las position del style
 		<div class="errores">
 		</div>
 		{% if forloop.counter == 1%}
-	    {{field|login1:''}}
+	    {{field|login1v2:''}}
 
 		{% endif %}
 		{% if forloop.counter == 2%}
@@ -35,14 +35,86 @@ basicamente, hay que cambiar las position del style
 		{{field|login3:''}} 
 		{% endif %}
 		<p></p>
+		{% comment %}
 		{% if field.help_text %}
-
 		Aun no :v
 		<p class="help">{{ field.help_text|safe }}</p>
 		{% endif %}
+		{% endcomment %}
+
 
 		{% endfor %}
-		<input type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" class="" placeholder="Cédula" required="" id="id_username">
+
+		{% if form2 %}
+		{% for field in form2 %}
+
+		{% csrf_token %}
+		<div class="errores">
+		</div>
+		{% if forloop.counter == 1%}
+
+		{% if residencia1 %}
+		{{field|datosF3:''}}    
+	    {% else %}
+		{{field|datosF1:''}}
+	    {% endif %}
+
+		{% endif %}
+		{% if forloop.counter == 2%}
+		{{field|datosF2:''}} 
+		{% endif %}
+		{% if forloop.counter == 3%}
+		{{field|datosF3:''}} 
+		{% endif %}
+		<p></p>
+		{% comment %}
+		{% if field.help_text %}
+		Aun no :v
+		<p class="help">{{ field.help_text|safe }}</p>
+		{% endif %}
+		{% endcomment %}
+
+
+		{% endfor %}
+		{% endif %}
+
+		{% if form3 %}
+			{% for field in form3 %}
+
+			{% csrf_token %}
+			<div class="errores">
+			</div>
+			{% if forloop.counter == 1%}
+			{{field|login4:''}} 
+			{% endif %}
+			{% if forloop.counter == 2%}
+			{{field|login3:''}} 
+			{% endif %}
+			<p></p>
+			{% comment %}
+			{% if field.help_text %}
+			Aun no :v
+			<p class="help">{{ field.help_text|safe }}</p>
+			{% endif %}
+			{% endcomment %}
+
+
+			{% endfor %}
+			
+		{% endif %}
+
+		
+		{% comment %}
+		<input list="cod_area2" placeholder="Nombre del área" name="cod_area" required id="id_cod_area" class="">
+
+
+		<datalist id="cod_area2">
+
+		  <option value="hola k aze">
+
+		  </option>
+		</datalist>
+		{% endcomment %}
 		<button type="submit" id="login-button">Registrarse</button>
 
 	</form>

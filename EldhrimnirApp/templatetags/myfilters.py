@@ -31,66 +31,80 @@ def addclass(value, arg):
 
 @register.filter(name='login1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,'placeholder': "Cédula"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off','placeholder': "Cédula"})
 @register.filter(name='login2')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Contraseña"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Contraseña"})
 
 @register.filter(name='login3')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Confirmar Contraseña"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Confirmar Contraseña"})
 
-
+@register.filter(name='login4')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nueva Contraseña"})
 
 @register.filter(name='login1v2')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,'placeholder': "Usuario ( Cédula )"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off','placeholder': "Usuario ( Cédula )"})
 
 
 @register.filter(name='datosF1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nombre"})
 
 
 @register.filter(name='datosF2')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Apellido"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Apellido"})
 
 
 @register.filter(name='datosF3')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Lugar de Residencia"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Lugar de Residencia"})
 
 
 @register.filter(name='carreraF1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nombre"})
 
 @register.filter(name='seccionF1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Número de sección"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Número de sección"})
 
 @register.filter(name='materiaF1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre de la materia"})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nombre de la materia"})
 
 @register.filter(name='datosAddF1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre",'id':'name1'})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nombre",'id':'name1'})
 
 
 @register.filter(name='datosAddF2')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Apellido",'id':'lastname1'})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Apellido",'id':'lastname1'})
 
 
 @register.filter(name='datosTeachAddF1')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Nombre",'id':'name2'})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nombre",'id':'name2'})
 
 
 @register.filter(name='datosTeachAddF2')
 def addclass(value, arg):
-    return value.as_widget(attrs={'class': arg,"placeholder": "Apellido",'id':'lastname2'})
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Apellido",'id':'lastname2'})
 
+
+@register.filter(name='teachereval1')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Descripción"})
+
+@register.filter(name='teachereval2')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Ponderación"})
+
+@register.filter(name='teachereval3')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Fecha"})
 

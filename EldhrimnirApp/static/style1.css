@@ -118,6 +118,10 @@ form input:focus {
   width: 300px;
   color: black;
 }
+form input:focus::placeholder {
+  color: black;
+}
+/* placeholder edited */
 form button {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -127,7 +131,10 @@ form button {
   border: 0;
   padding: 10px 15px;
   color: black;
+  /*
   border-radius: 3px;
+  */
+  border-radius: 5rem;
   width: 250px;
   cursor: pointer;
   font-size: 18px;
@@ -137,6 +144,9 @@ form button {
 }
 form button:hover {
   background-color: #f5f7f9;
+}
+.disabled1 {
+  cursor: not-allowed;
 }
 .bg-bubbles {
   position: fixed;

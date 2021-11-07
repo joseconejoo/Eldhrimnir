@@ -4,9 +4,8 @@
 {% load myfilters %}
 
 {% block titu_tabla %}
-{{seccion.carrera.nombre}}
-<br>
-Sección {{seccion.seccion_num}}
+
+Cargo de control de estudios
 {% endblock %}
 
 
@@ -14,9 +13,6 @@ Sección {{seccion.seccion_num}}
 
 <section class="content">
   <div class="buttonBlockDiv">
-    <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal2" data-href="{% url 'usu_add' 1 seccion.carrera.pk 0 %}" data-pestana_nom="Agregar Estudiante" data-switch1 = '0' ><span class="fa fa-plus" id="iconB"></span> Agregar estudiante</a>
-    <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href="" data-pestana_nom="Agregar Materia"><span class="fad fa-cog" id="iconB"></span> Agregar materia</a>
-    
 
   </div>
   <br>
@@ -30,43 +26,47 @@ Sección {{seccion.seccion_num}}
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th>Nº</th>
-                  <th>Materia</th>
-                  <th>Profesor</th>
-                  <th>Nº Estudiantes</th>
+                  <th>Cargo</th>
+                  <th>Nombre y Apellido</th>
+                  <th>Usuario</th>
+                  
                   <th>Enlace</th>
                   
 
                 </tr>
               </thead>
               <tbody>
-                {% for materia in users1 %}
+                {% for usuario1x in users1 %}
                 <tr>
+                  {% comment %}
                   <td>{{forloop.counter}}</td>
+                  {% endcomment %}
+                  <td>{{ usuario1x.cargo1 }} </td>
                   
                   <td>
-                    <p class="text-left">{{materia.materia_nom}} </p>
+                    {{usuario1x.datos1.nombre}} {{usuario1x.datos1.apellido}}
                     
-                    <p class="text-muted text-left">{{materia.tipo_mate}} </p>
+                    
+                    
                   </td>
-                  {% if materia.profesor %}
-                  <td>{{materia.profesor.datos1.nombre}} {{materia.profesor.datos1.apellido}}</td>
-                  {% elif user.nivelesnum.ctrl_est1 or user.nivelusu.nivel_usu.nivel_num == 1  %}
-                  <td>
-                    <a class="btn btn-primary blancColor" data-toggle="modal" data-target="#myModal3" data-href="{% url 'usu_add' 2 seccion.carrera.pk materia.pk  %}" data-pestana_nom="Agregar Profesor" data-switch1 = '1'> Añadir Profesor</a>
-
-                  </td>
+                  {% if usuario1x.username %}
+                  <td>{{usuario1x.username|intcomma}}</td>
                   
                   {% else %}
-                  <td>Aún no hay profesor</td>
+                  <td>
+                    <a class="btn btn-primary blancColor" data-toggle="modal" data-target="#myModal3" data-href="{% url 'usu_add_ctrl_estud' %}" data-pestana_nom="Agregar Profesor" data-switch1 = '1'> Añadir {{usuario1x.cargo1 }}</a>
+
+                  </td>
                   {% endif %}
                   
-                  <td>{{materia.alumnos }}</td>
                   
                   
                   <td>
-                    <a href= " {% url 'seccion_carrera' seccion.pk %} "><span class="btn btn-primary" > ir</span></a>
-
+                    {% if usuario1x.username %}
+                    <a href= "{% url 'perfil_u' usuario1x.pk %}"><span class="btn btn-primary" > ir</span></a>
+                    {% else %}
+                    <a href= "#"><span class="btn btn-primary disabled" > ir</span></a>
+                    {% endif %}
                   </td>
                 </tr>
 

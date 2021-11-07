@@ -5,7 +5,7 @@
 
 
 {% block titu_tabla %}
-Lista de usuarios
+Aceptación de usuarios
 {% endblock %}
 
 
@@ -27,11 +27,7 @@ Lista de usuarios
                   <th>Nombre</th>
                   <th>Apellido</th>
                   <th>Cédula</th>
-                  <th>Enlace</th>
-
-                  {% comment %}
                   <th>Aprobar</th>
-                  {% endcomment %}
 
                 </tr>
               </thead>
@@ -42,16 +38,12 @@ Lista de usuarios
                   <td>{{users.datos1.nombre}} </td>
                   <td>{{users.datos1.apellido }}</td>
                   <td>{{users.username |intcomma}}</td>
-                  {% comment %}
+                  
                   <td>
                     <a data-toggle="modal" data-target="#myModal1" data-id="" data-href="{% url 'usu_accepted1' users.pk %}" data-nombre="{{users.datos1.nombre}} {{users.username |intcomma}}" data-tipo="Aprobación"><span class="btn btn-primary" ><i class="fa fa-check" id="iconB" style="color:rgba(0, 255, 0,0.95);">  </i> Si</span></a>
 
                     <a data-toggle="modal" data-target="#myModal1" data-id="" data-href="{% url 'usu_deleted1' users.pk %}" data-nombre="{{users.datos1.nombre}} {{users.username |intcomma}}" data-tipo="eliminacion"><span class="btn btn-primary"><i class="fa fa-times" id="iconB" style="color:rgba(255, 0, 0,0.95);"></i>  No </span></a>
                   </td>
-                {% endcomment %}
-                <td>
-                  <a href= "{% url 'perfil_u' users.pk %}"><span class="btn btn-primary" > ir</span></a>
-                </td>
                 </tr>
 
                 {% endfor %}

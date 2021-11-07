@@ -65,6 +65,11 @@
 .inFo1 {
   white-space: normal!important;
 }
+
+.too_long {
+  display: contents!important;
+  white-space: normal;
+}
 /* end index */
 
 /* botones */
@@ -172,3 +177,15 @@ input[type=number] {
 }
 /* end modal */
 /* end Forms fields */
+
+/* profesor frontend carreras asignadas */
+.textBigger1 {
+  font-size: 1.4rem;
+}
+.textBiggerSpace2 {
+  height: 2rem;
+}
+/* end profesor frontend carreras asignadas */
+.disabled1 {
+  cursor: not-allowed!important;
+}
