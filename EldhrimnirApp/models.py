@@ -77,3 +77,9 @@ class evaluacion_materia(models.Model):
 	descripcion = models.CharField(max_length=250)
 	ponderacion = models.PositiveIntegerField(validators=[MinValueValidator(5,message="Ponderación no valida."), MaxValueValidator(30,message="Ponderación no valida.")])
 	fecha = models.DateField(blank=True)
+
+class eval_estudiante(models.Model):
+	student = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+	evaluacion_num = models.ForeignKey(evaluacion_materia, on_delete=models.CASCADE)
+	nota = models.PositiveIntegerField()
+	asistente = models.BooleanField(default=False)

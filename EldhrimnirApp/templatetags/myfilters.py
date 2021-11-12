@@ -15,6 +15,14 @@ def addclass(value, arg):
 def substract_date(num1,num2):
     return (num1 - num2)
 
+@register.filter(name='indexable')
+def index(indexable, i):
+    return indexable[i]
+
+@register.filter(name='intcomma2')
+def intcomma2(object1, num21):
+    pass
+    #return ('{:.}'.format(num21))
 
 """
 def addcss(value, arg):
@@ -107,4 +115,9 @@ def addclass(value, arg):
 @register.filter(name='teachereval3')
 def addclass(value, arg):
     return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Fecha"})
+
+@register.filter(name='teachereval4')
+def addclass(value, arg):
+    return value.as_widget(attrs={'class': arg, 'autocomplete' : 'off',"placeholder": "Nota"})
+
 

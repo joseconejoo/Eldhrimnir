@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django import forms
-from .models import evaluacion_materia, materia_seccion, carrera_seccion, carreras ,NivelesNum, Datos1
+from .models import eval_estudiante, evaluacion_materia, materia_seccion, carrera_seccion, carreras ,NivelesNum, Datos1
 
 from django.utils.translation import gettext as _
 from django.contrib.auth import (
@@ -8,6 +8,11 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.models import User
 
+
+class eval_estudianteF(forms.ModelForm):
+	class Meta:
+		model = eval_estudiante
+		fields = ('nota','asistente')
 class evaluacion_materiaF(forms.ModelForm):
 	class Meta:
 		model = evaluacion_materia

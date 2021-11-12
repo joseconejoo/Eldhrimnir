@@ -189,3 +189,21 @@ input[type=number] {
 .disabled1 {
   cursor: not-allowed!important;
 }
+.buttoncenterdiv {
+  display: grid;
+}
+.buttoncenter {
+  margin: auto;
+}
+/* profesor frontend cargar evaluaciones */
+
+.flex_form{
+  display: flex;
+  border-bottom: 0.12rem dotted #2121549e;
+}
+
+.asis_he {
+  height: 1.5rem;
+}
+
+/* end profesor frontend cargar evaluaciones */

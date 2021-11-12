@@ -11,7 +11,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .forms import evaluacion_materiaF, actu_contra, Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
+from .forms import eval_estudianteF, evaluacion_materiaF, actu_contra, Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
 from .models import Tipo_Materia, evaluacion_materia, MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
 
 from .func1 import prof_add_materia, est_add_materia
@@ -21,6 +21,8 @@ from django.contrib import messages
 
 from django.utils import timezone
 from datetime import datetime, timedelta
+
+from django.forms import formset_factory
 
 teorica = Tipo_Materia.objects.filter(pk=1)[0].num_eval_min
 practica = Tipo_Materia.objects.filter(pk=2)[0].num_eval_min
@@ -484,20 +486,41 @@ def carga_evaluaciones(request, pk):
 			evaluaciones_q = evaluacion_materia.objects.filter(materia = pk).order_by('id')
 			total_percent = 0
 			total_percent += post.ponderacion
+
+			errors = 0
 			for evaluacion in evaluaciones_q:
 				total_percent += evaluacion.ponderacion
 
 			if (total_percent > 100 ):
 				messages.error(request, 'Porcentaje total no puede ser mayor al 100 %')
 				print('not allowed')
-				pass
-			else:
+				errors += 1
+			hoy_o_anterior = (datetime.now() + timedelta(1)).date()
+			if (post.fecha < hoy_o_anterior):
+				messages.error(request, 'La fecha de la evaluacion no puede ser anterior a hoy')
+				errors += 1
+			if ( errors == 0):
 				post.save()
+				messages.success(request, 'Evaluación registrada')
 
 			return redirect('carga_evaluaciones', pk=pk)
 
 	else:
 		form = evaluacion_materiaF()
+		# form2 carga estudiantes notas
+		
+		estudiantes  = User.objects.filter(nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
+		form2m = formset_factory(eval_estudianteF, extra= estudiantes.count() )
+		
+		estu_count = 1
+		estud_list = {}
+		for estudiante in estudiantes:
+			estud_list[estu_count] = estudiante
+			estu_count += 1
+			
+		print(estud_list)
+		
+		# end form2 carga estudiantes notas
 		materias_q = materia_actual		
 		#messages.success(request, 'Fecha no valida.')
 		min_evals = materia_actual.tipo_mate.num_eval_min
@@ -509,15 +532,13 @@ def carga_evaluaciones(request, pk):
 			total_percent += evaluacion.ponderacion
 			total_evals += 1
 
-		print (total_percent, 'totalpercent')
 		verif1 = min_evals-total_evals
-		print (verif1)
+		#print (verif1)
 		to_reajust = 0
 		if (verif1 > 0):
 			# multiply by 5 because is the minimun
 			verif1 = (verif1 - 1)
 			total_percent += verif1 * 5
-			print (total_percent)
 			to_reajust = verif1 * 5
 
 		#reajust total_percent to print
@@ -530,16 +551,56 @@ def carga_evaluaciones(request, pk):
 
 		date_min_value = timezone.now() + timedelta(1)
 		date_min_value = str(date_min_value.day) +'/'+ str(date_min_value.month)+'/'+ str(date_min_value.year)
-		print(date_min_value)
+		#print(date_min_value)
 		allow_anadir_eval = True
 		if (materias_q.total_percent == 100):
 			allow_anadir_eval = False
 
-		return render(request, 'Profesor/carga_evaluaciones.html', {'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
+
+		#cargar notas
+		for eval1 in evaluaciones_q:
+			ahoramismo = (datetime.now() + timedelta(0)).date()
+			#ahoramismo = (timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)).date()
+			#5 dias habiles para cargar notas
+			limite = eval1.fecha + timedelta(5)
+			#print(ahoramismo, '\n', limite)
+			eval1.permiso_cargar = False
+
+			if ((ahoramismo >= eval1.fecha) and (ahoramismo <= limite) ):
+				eval1.permiso_cargar = True
+
+		return render(request, 'Profesor/carga_evaluaciones.html', {'estud_list':estud_list, 'form2m':form2m, 'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
+def carga_eval(request, pk_eval):
+	evaluaciones_q = evaluacion_materia.objects.filter(pk = pk_eval).order_by('id')
+	if (evaluaciones_q.exists()):
+		evaluaciones_q = evaluaciones_q[0]
+
+	estudiantes  = User.objects.filter(nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
+	form2m = formset_factory(eval_estudianteF, extra= estudiantes.count() )
+	formset_1 = form2m(data=request.POST)
+
+	if (formset_1.is_valid()):
+		estud_count = 0
+		#detail_instances = formset_1.save(commit=False)
+
+		for f in formset_1:
+			print(f)
+			"""
+			to_save = eval_estudianteF()
+			to_save.student = estudiantes[estud_count]
+			to_save.evaluacion_num_id = evaluaciones_q.pk
+			to_save.nota = f.cleaned_data['nota']
+			to_save.asistente = f.cleaned_data['asistente']
+			to_save.save()
+			#f.save()
+			estud_count += 1
+			"""
+
+	return redirect('carga_evaluaciones', pk = evaluaciones_q.materia.pk)
 
 def usu_coord_creacion(request):
 	for x in range(1):
-		ctrl_stud  = User.objects.filter(nivelusu__nivel_usu = nivel_control_estudios)
+		ctrl_stud  = User.objects.filter(nivelusu__nivel_usu = nivel_control_estudios, is_active= True)
 		cargo = NivelesNum2.objects.get(pk = nivel_control_estudios)
 		print (ctrl_stud)
 		if (not ctrl_stud.exists()):

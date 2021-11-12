@@ -23,6 +23,7 @@ urlpatterns = [
     path('profesor/mis_materias', views.materias_profesor, name = 'materias_profesor'),
     path('profesor/<int:pk>/cargar_eval', views.carga_evaluaciones, name = 'carga_evaluaciones' ),
 
+    path('api/profesor/materia_add_eval/num_eval/<int:pk_eval>', views.carga_eval, name= 'carga_eval' ),
     path('api/usuadd/<int:type1>/<int:pk>/<int:pk_materia>', views.usu_add, name='usu_add'),
     
     path('ajax/user_exist/', views.verificiar_usuario, name='verificiar_usuario'),

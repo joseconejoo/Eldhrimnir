@@ -54,9 +54,6 @@ Formacion Critica
   <div class="card card-solid">
     <div class="card-body pb-0">
       <div class="row d-flex align-items-stretch">
-
-
-        
         {% for evaluacion in evaluaciones %}
         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
           <div class="card bg-light col-md-11">
@@ -82,7 +79,7 @@ Formacion Critica
               <div class="row">
                 <div class="col-12 buttoncenterdiv" >
                   {% if evaluacion.permiso_cargar %}
-                  <a class="btn btn-primary redondear_borde blancColor buttoncenter" data-toggle="modal" data-target="#myModal2" data-href=" {% url 'carga_eval' evaluacion.pk %} " data-pestana_nom="Carga de Notas nº{{forloop.counter}}" data-ponderacion="{{ evaluacion.ponderacion }}"><span class="fa fa-plus0" id="iconB"></span> Cargar notas
+                  <a class="btn btn-primary redondear_borde blancColor buttoncenter" data-toggle="modal" data-target="#myModal2" data-href=" {% url 'carga_evaluaciones' materia.pk %} " data-pestana_nom="Carga de Notas" data-ponderacion="{{ evaluacion.ponderacion }}"><span class="fa fa-plus0" id="iconB"></span> Cargar notas
                   </a>
                   {% else %}
                   <a class="btn btn-primary redondear_borde blancColor disabled1 disabled buttoncenter" data-toggle="modal" data-target="#" data-href="" data-pestana_nom="Agregar Evaluación" title="aun no"><span class="fa fa-plus0" id="iconB"></span> Cargar notas
@@ -92,7 +89,7 @@ Formacion Critica
                 {% comment %}
                 <div class="col-6">
                   {% if allow_anadir_eval %}
-                  <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href=" {% url 'carga_evaluaciones' carga_eval.pk %} " data-pestana_nom="Agregar Evaluación" ><span class="fa fa-plus0" id="iconB"></span> Ver notas
+                  <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href=" {% url 'carga_evaluaciones' materia.pk %} " data-pestana_nom="Agregar Evaluación" ><span class="fa fa-plus0" id="iconB"></span> Ver notas
                   </a>
                   {% else %}
                   <a class="btn btn-primary redondear_borde blancColor disabled1 disabled" data-toggle="modal" data-target="#" data-href="" data-pestana_nom="Agregar Evaluación"><span class="fa fa-plus0" id="iconB"></span> Ver notas
@@ -480,6 +477,7 @@ Formacion Critica
 
                 {% for field in form1 %}
 
+                {% csrf_token %}
                 <div class="errores">
                 </div>
                 {% if forloop.counter == 1%}
@@ -492,7 +490,7 @@ Formacion Critica
                 {% endif %}
                 {% if forloop.counter == 3%}
                 <p>Fecha</p>
-                <input type="date" min='{{date_min_value}}' {{field|teachereval3:'form-control col-md-5'}}
+                <input type="date" min='{{date_min_value}}' {{field|teachereval3:'form-control'}}
                 {% endif %}
                 <p></p>
                 {% comment %}
@@ -546,34 +544,20 @@ Formacion Critica
               <fieldset class="">
                 
 
+                {% csrf_token %}
                 <div class="flex_form">
-                  <div class="col-5 text-center">Estudiante</div>
-                  <div class="col-3 text-center">Notas</div>
-                  <div class="col-3 text-center">Asistencia</div>
-                  
+                  <div class="col-3 text-center">notas</div>
+                  <div class="col-3 text-center">asistencia</div>
                 </div>
                 <br>
-                <!-- start multiple forms -->
-                {% csrf_token %}
-                {{ form2m.management_form }}
-                {% for form2 in form2m %}
-
-
-
                 {% for field in form2 %}
-                
+
+                {% csrf_token %}
                 <div class="errores">
                 </div>
                 {% if forloop.counter == 1%}
                 <div class="flex_form">
-                  <div class="col-5">
-                    {% with estudiante1=estud_list|indexable:forloop.parentloop.counter %}
-                    {{ estudiante1.datos1.nombre }} {{ estudiante1.datos1.apellido }}
-                    <br>
-                    {{ estudiante1|intcomma }}
-                    {% endwith %}
-                  </div>
-                  {{field|teachereval4:'form-control col-3 nota_eval_pond'}}                  
+                  {{field|teachereval4:'form-control col-3'}}                  
 
                   
 
@@ -582,7 +566,7 @@ Formacion Critica
                 {% if forloop.counter == 2%}
 
                 <!-- replace min and max for values from views -->
-                {{field|teachereval2:'asis_he form-control col-3'}}
+                {{field|teachereval2:'form-control col-3'}}
                 </div>
 
 
@@ -602,8 +586,6 @@ Formacion Critica
                 {% endcomment %}
 
                 {% endfor %}
-                {% endfor %}
-                <!-- end multiple forms -->
                 {% comment %}
                 <div class="col-md-6 unalin2">
                   <button class="btn btn-lg btn-block" type="submit" id="enviof-1">Si</button>
@@ -677,29 +659,4 @@ Formacion Critica
 {% endcomment %}
 {% endif %}
 <!-- end alerts -->
-
-<!-- start js eval max ponderacion -->
-<script type="text/javascript">
-  
-  $('[data-toggle = "modal"]').click(function(){
-    ponderacion1 = $(this).data('ponderacion');
-    console.log(ponderacion1);
-    evaluaciones = $('input[type = "number"].nota_eval_pond');
-    evaluaciones.each((ind,elem) => {
-      console.log(elem)
-      elem.placeholder = '0 - '+ponderacion1+' %';
-      elem.max = ponderacion1;
-    });
-    //console.log(evaluaciones)
-
-  });
-  
-</script>
-<!-- end js eval max ponderacion -->
-
-
-
-
-<!-- end block js -->
-
 {% endblock %}

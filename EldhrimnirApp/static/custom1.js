@@ -1,32 +1,57 @@
 
 
 /* modal js data from html */
-$('#myModal1').on('show.bs.modal', function (e) {
+//$('[data-toggle = "modal"]').on('show.bs.modal', function (e) {
+    $('[data-toggle = "modal"]').click(function(){
+       /*
        $(this).find('.modal-content').css({
               width:'auto', //probably not needed
               height:'auto', //probably not needed 
               'max-height':'10%'
 
        });
+       */
+       var xadd = $(this).data('id');
+       var valks_action_form = $(this).data('href');
+       //var nombre = $(this).data('nombre');
+       //var tipo_op = $(this).data('tipo');
+       var pestana = $(this).data('pestana_nom');
+       to_modal = $(this).data('target');
 
-       var xadd = $(e.relatedTarget).data('id');
-       var valks_action_form = $(e.relatedTarget).data('href');
-       var nombre = $(e.relatedTarget).data('nombre');
-       var tipo_op = $(e.relatedTarget).data('tipo');
-       var pestana = $(e.relatedTarget).data('pestana_nom');
-       
+       if ($(to_modal)) {
 
-       if (nombre && tipo_op) {
-        document.getElementById("text-mod1").innerHTML = "Confirmar "+tipo_op +" del usuario "+ nombre+"";
-       }
-       if (pestana) {
-        document.getElementById("text-mod1").innerHTML = pestana;
-       }
+          console.log(to_modal, pestana)
+          to_modal = $(to_modal);
+
+
+              /*
+              if (nombre && tipo_op) {
+              document.getElementById("text-mod1").innerHTML = "Confirmar "+tipo_op +" del usuario "+ nombre+"";
+              }
+              */
+
+              if (pestana) {
+
+               //console.log(pestana)
+               $(".modal-title", to_modal).eq(0).text(pestana);
+               } 
+
+           form_action_modal = $('form', to_modal);
+              //console.log(url_form_action);
+              form_action_modal.eq(0).attr('action', valks_action_form);
+              //console.log(form_action_modal.eq(0).attr('action'));
+
+              //console.log(title_modal);
+          }
+
+          console.log($(this))
+
+
        //document.getElementById("pr1").innerHTML = x12[3];
        //var xsd = document.getElementById("Fbs1").acat;
-       var oForm = document.forms["ProblemForm"];
+       //var oForm = document.forms["ProblemForm"];
        //problemform2 if modal 2
-       oForm.action=valks_action_form;
+       //oForm.action=valks_action_form;
 
 
        //var xsd = document.getElementById("Fbs1").acat;
@@ -41,69 +66,7 @@ $('#myModal1').on('show.bs.modal', function (e) {
 
        //window.print("hola")
 
-});
-$('#myModal2').on('show.bs.modal', function (e) {
-       $(this).find('.modal-content').css({
-              width:'auto', //probably not needed
-              height:'auto', //probably not needed 
-              'max-height':'10%'
-
-       });
-
-       var xadd = $(e.relatedTarget).data('id');
-       var valks_action_form = $(e.relatedTarget).data('href');
-       var nombre = $(e.relatedTarget).data('nombre');
-       var tipo_op = $(e.relatedTarget).data('tipo');
-       var pestana = $(e.relatedTarget).data('pestana_nom');
-       
-
-       if (nombre && tipo_op) {
-        document.getElementById("text-mod2").innerHTML = "Confirmar "+tipo_op +" del usuario "+ nombre+"";
-       }
-
-       if (pestana) {
-        document.getElementById("text-mod2").innerHTML = pestana;
-       }
-
-       //document.getElementById("pr1").innerHTML = x12[3];
-       //var xsd = document.getElementById("Fbs1").acat;
-
-       var oForm = document.forms["ProblemForm2"];
-       oForm.action=valks_action_form;
-       
-
-});
-
-
-$('#myModal3').on('show.bs.modal', function (e) {
-       $(this).find('.modal-content').css({
-              width:'auto', //probably not needed
-              height:'auto', //probably not needed 
-              'max-height':'10%'
-
-       });
-
-       var xadd = $(e.relatedTarget).data('id');
-       var valks_action_form = $(e.relatedTarget).data('href');
-       var nombre = $(e.relatedTarget).data('nombre');
-       var tipo_op = $(e.relatedTarget).data('tipo');
-       var pestana = $(e.relatedTarget).data('pestana_nom');
-
-
-       if (nombre && tipo_op) {
-        document.getElementById("text-mod3").innerHTML = "Confirmar "+tipo_op +" del usuario "+ nombre+"";
-       }
-
-       if (pestana) {
-        document.getElementById("text-mod3").innerHTML = pestana;
-       }
-
-       var oForm = document.forms["ProblemForm3"];
-       oForm.action=valks_action_form;
-
-
-});
-
+   });
 
 
 /*
