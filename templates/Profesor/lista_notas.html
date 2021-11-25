@@ -4,19 +4,25 @@
 {% load myfilters %}
 
 {% block titu_tabla %}
-{{seccion.carrera.nombre}}
+
 <br>
-Sección {{seccion.seccion_num}}
+<div class="text-center">
+  <div class="col-md-12">
+    <h1>{{materia.materia_nom}}</h1>
+    <h1 class="text-muted" >{{materia.tipo_mate}}</h1>
+    <h1 class="text-muted" >Cortes evaluados</h1>
+    
+  </div>
+
+</div>
 {% endblock %}
 
 
 {% block table1 %}
 
 <section class="content">
+
   <div class="buttonBlockDiv">
-    <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal2" data-href="{% url 'usu_add' 1 seccion.carrera.pk 0 %}" data-pestana_nom="Agregar Estudiante" data-switch1 = '0' ><span class="fa fa-plus" id="iconB"></span> Agregar estudiante</a>
-    <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href="" data-pestana_nom="Agregar Materia"><span class="fad fa-cog" id="iconB"></span> Agregar materia</a>
-    
 
   </div>
   <br>
@@ -30,48 +36,86 @@ Sección {{seccion.seccion_num}}
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th>Nº</th>
-                  <th>Materia</th>
-                  <th>Profesor</th>
-                  <th>Nº Estudiantes</th>
-                  <th>Enlace</th>
+                  <th>Estudiante</th>
+                  {% comment %}
+                  {% for eval in evaluaciones_q %}
+                  <th> {{forloop.counter }} </th>
+                  {% endfor %}
+                  {% endcomment %}
+                  <th> Evaluaciones </th>
+                  <th> promedio <br> (20) </th>
+                  <th> suma <br> total <br> (100) </th>
+                  <th> % Asistencia </th>
                   
 
                 </tr>
               </thead>
               <tbody>
-                {% for materia in users1 %}
+                {% for estudiante in users1 %}
                 <tr>
-                  <td>{{forloop.counter}}</td>
+                  <td>
+                    <p class="text-left">{{estudiante.datos1.nombre}} {{estudiante.datos1.apellido}}  </p>
+                    <p class="text-muted text-left">{{estudiante.username | intcomma }} </p>
+                  </td>
+                  
                   
                   <td>
-                    <p class="text-left">{{materia.materia_nom}} </p>
-                    
-                    <p class="text-muted text-left">{{materia.tipo_mate}} </p>
-                  </td>
-                  {% if materia.profesor %}
-                  <td>
-                    <a href="{% url 'perfil_u' materia.profesor.pk %}" class="a_like_no">
-                      {{materia.profesor.datos1.nombre}} {{materia.profesor.datos1.apellido}}
-                    </a>
-                    
-                  </td>
-                  {% elif user.nivelesnum.ctrl_est1 or user.nivelusu.nivel_usu.nivel_num == 1  %}
-                  <td>
-                    <a class="btn btn-primary blancColor" data-toggle="modal" data-target="#myModal3" data-href="{% url 'usu_add' 2 seccion.carrera.pk materia.pk  %}" data-pestana_nom="Agregar Profesor" data-switch1 = '1'> Añadir Profesor</a>
+                  <table id="example2" class="table table-bordered table-striped">
+                    <tbody class="col-5 test_table_inside">
+                      {% with notasx=evals_estud_all|indexable:estudiante.pk %}
+                      
 
-                  </td>
-                  
-                  {% else %}
-                  <td>Aún no hay profesor</td>
-                  {% endif %}
-                  
-                  <td>{{materia.alumnos }}</td>
-                  
-                  
-                  <td>
-                    <a href= " {% url 'seccion_carrera' seccion.pk %} "><span class="btn btn-primary" > ir</span></a>
 
+                      {% for nota in notasx %}
+                      
+                      {% if not forloop.counter|divisibleby:"2" %}
+                      <tr>
+                      <td class="negritas">
+                        nº {{forloop.counter}}
+                        <br>
+                        <span>
+                          {% if nota %}
+                          {{nota}}
+                          {% else %}
+                          No cargada aún
+                          {% endif %}
+                        </span>
+                      </td>
+                      {% else %}
+                      <td class="negritas">
+                        nº {{forloop.counter}}
+                        <br>
+                        <span>
+                          {% if nota %}
+                          {{nota}}
+                          {% else %}
+                          No cargada aún
+                          {% endif %}
+                        </span>
+                      </td>
+                      </tr>
+                      {% endif %}
+
+
+                      
+
+                      {% empty %}
+                      Aún no hay notas
+                      {% endfor %}
+                      {% endwith %}
+
+                    </tbody>
+                  </table>
+                  </td>
+                  <td>
+                    {{ estudiante.notastotal20 }}
+                  </td>
+                  <td>
+                    {{ estudiante.notas100 }}
+                  </td>
+                  <br>
+                  <td>
+                    {{ estudiante.asistencia }} % 
                   </td>
                 </tr>
 
@@ -402,7 +446,7 @@ Sección {{seccion.seccion_num}}
   {% endblock %}
 
 
-  {% block jsend2 %}
+{% block jsend2 %}
 
 <script type="text/javascript">
 

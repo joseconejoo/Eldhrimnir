@@ -37,7 +37,7 @@ class Datos1(models.Model):
 class carreras(models.Model):
 	nombVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
 	nombre = models.CharField(validators=[nombVer],max_length=200)
-	user_edit = models.ForeignKey('auth.User',on_delete=models.CASCADE, blank=True)
+	user_edit = models.ForeignKey('auth.User',on_delete=models.SET_NULL, blank=True, null= True)
 	date_edit = models.DateTimeField(blank=True)
 
 class carrera_seccion(models.Model):

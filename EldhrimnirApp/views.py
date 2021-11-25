@@ -12,7 +12,7 @@ from django.contrib.auth import (
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .forms import eval_estudianteF, evaluacion_materiaF, actu_contra, Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
-from .models import Tipo_Materia, evaluacion_materia, MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
+from .models import eval_estudiante, Tipo_Materia, evaluacion_materia, MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
 
 from .func1 import prof_add_materia, est_add_materia
 
@@ -32,6 +32,13 @@ global nivel_estudiante
 nivel_estudiante = 3
 nivel_control_estudios = 1
 nivel_profesor = 4
+
+
+def get_mate_evals(pk):
+	return evaluacion_materia.objects.filter(materia = pk).order_by('id')
+
+def get_estudiantes(pk_materia):
+	return User.objects.filter(materiasestu__materia= pk_materia ,nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
 
 def land_page(request):
 	return redirect('login1')
@@ -94,6 +101,9 @@ def perfil_u(request, pk):
 	else:
 		#if (Datos1.objects.get(usuario=pk).nombre):
 		# new login password nuevo login contraseña
+		if (request.user.pk != pk):
+			# falta message
+			return redirect ('perfil')
 		print (condition2,'\n\n')
 		registred = None
 		if (condition2 and not condition3):
@@ -228,7 +238,7 @@ def accept_usu1(request):
 	#users = User.objects.filter(nivelesnum__ctrl_est1__exact=True,is_active=False).order_by('id')
 	users = User.objects.all().order_by('id')
 	
-	return render(request, 'coordinator/usu_accept.html',{'users1':users})
+	return render(request, 'Coordinator/usu_accept.html',{'users1':users})
 
 
 def usu_accepted1(request,pk):
@@ -254,6 +264,7 @@ def usu_deleted1(request, pk):
 
 
 def carreras_list(request):
+	# control de estudios
 	if request.method == "POST":
 	    form = form_add = carreras_add(request.POST)
 	    
@@ -279,6 +290,7 @@ def carreras_list(request):
 		return render(request, 'CtrlEstud/carreras_list.html',{'users1':carreras_q,'form1':form_add})
 
 def carrera_detal(request, pk):
+	# control de estudios
 	if request.method == "POST":
 		form = carrera_seccion_F(request.POST)
 
@@ -306,6 +318,8 @@ def carrera_detal(request, pk):
 		return render(request, 'CtrlEstud/carrera_detal.html', {'users1':secciones_q,'carrera': carreras_q,'form1':form})
 
 def seccion_carrera(request, pk):
+	# control de estudios
+
 	if request.method == "POST":
 		form = materia_seccion_F(request.POST)
 		#username = request.POST.get('username')
@@ -346,6 +360,7 @@ def verificiar_usuario(request):
     return JsonResponse(data)
 
 def usu_add(request, type1, pk, pk_materia):
+	# control de estudios
 	#User student adding
 	if request.method == 'POST':
 		#form2 from seccion_carrera
@@ -426,6 +441,7 @@ def usu_add(request, type1, pk, pk_materia):
 		return redirect(seccion_carrera,pk=pk)
 
 def usu_add_ctrl_estud(request):
+	#coordinador
 	if request.method == 'POST':
 		# form2 from usu_coord_creacion
 		form2 = DatosAddF(request.POST)
@@ -468,6 +484,7 @@ def usu_add_ctrl_estud(request):
 
 	return redirect(usu_coord_creacion)
 def materias_profesor(request):
+	# profesor
 	materias_q = materia_seccion.objects.filter(materiateacher__profesor = request.user.pk).order_by('id')
 	for materia in materias_q:
 		materia.alumnos = MateriasEstu.objects.filter(materia = materia.pk).order_by('id').count()
@@ -483,7 +500,7 @@ def carga_evaluaciones(request, pk):
 			post = form.save(commit=False)
 			post.materia = materia_actual
 
-			evaluaciones_q = evaluacion_materia.objects.filter(materia = pk).order_by('id')
+			evaluaciones_q = get_mate_evals(pk)
 			total_percent = 0
 			total_percent += post.ponderacion
 
@@ -497,7 +514,7 @@ def carga_evaluaciones(request, pk):
 				errors += 1
 			hoy_o_anterior = (datetime.now() + timedelta(1)).date()
 			if (post.fecha < hoy_o_anterior):
-				messages.error(request, 'La fecha de la evaluacion no puede ser anterior a hoy')
+				messages.error(request, 'La fecha de la evaluacion no puede ser hoy, ni anterior a hoy')
 				errors += 1
 			if ( errors == 0):
 				post.save()
@@ -508,8 +525,9 @@ def carga_evaluaciones(request, pk):
 	else:
 		form = evaluacion_materiaF()
 		# form2 carga estudiantes notas
-		
-		estudiantes  = User.objects.filter(nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
+		materias_q = materia_actual
+		estudiantes  = get_estudiantes(materias_q)
+		#estudiantes = User.objects.filter(materiasestu__materia= materias_q ,nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
 		form2m = formset_factory(eval_estudianteF, extra= estudiantes.count() )
 		
 		estu_count = 1
@@ -521,11 +539,11 @@ def carga_evaluaciones(request, pk):
 		print(estud_list)
 		
 		# end form2 carga estudiantes notas
-		materias_q = materia_actual		
+		materias_q = materia_actual
 		#messages.success(request, 'Fecha no valida.')
 		min_evals = materia_actual.tipo_mate.num_eval_min
-		# working on min_evals*5 that is min value for evaluations
-		evaluaciones_q = evaluacion_materia.objects.filter(materia = pk).order_by('id')
+		# min_evals*5 that is min value for evaluations
+		evaluaciones_q = get_mate_evals(pk)
 		total_percent = 0
 		total_evals = 0
 		for evaluacion in evaluaciones_q:
@@ -569,13 +587,24 @@ def carga_evaluaciones(request, pk):
 			if ((ahoramismo >= eval1.fecha) and (ahoramismo <= limite) ):
 				eval1.permiso_cargar = True
 
-		return render(request, 'Profesor/carga_evaluaciones.html', {'estud_list':estud_list, 'form2m':form2m, 'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
-def carga_eval(request, pk_eval):
-	evaluaciones_q = evaluacion_materia.objects.filter(pk = pk_eval).order_by('id')
-	if (evaluaciones_q.exists()):
-		evaluaciones_q = evaluaciones_q[0]
 
-	estudiantes  = User.objects.filter(nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
+		#Ver notas cargadas
+		ver_notas_lista = False
+		if (total_percent == 100):
+			ver_notas_lista = True
+
+
+		return render(request, 'Profesor/carga_evaluaciones.html', {'ver_notas_lista':ver_notas_lista, 'estud_list':estud_list, 'form2m':form2m, 'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
+def carga_eval(request, pk_eval, pk_materia):
+	# profesor
+	evaluaciones_q2 = evaluacion_materia.objects.filter(pk= pk_eval,materia = pk_materia).order_by('id')
+
+	if (evaluaciones_q2.exists()):
+		evaluaciones_q2 = evaluaciones_q2[0]
+
+	
+	estudiantes  = get_estudiantes(pk_materia)
+	
 	form2m = formset_factory(eval_estudianteF, extra= estudiantes.count() )
 	formset_1 = form2m(data=request.POST)
 
@@ -583,21 +612,85 @@ def carga_eval(request, pk_eval):
 		estud_count = 0
 		#detail_instances = formset_1.save(commit=False)
 
-		for f in formset_1:
-			print(f)
+		for f in formset_1.forms:
+			
+			
+
+			#f.cleaned_data['student'] = estudiantes[estud_count]
+			#f.cleaned_data['evaluacion_num'] = evaluaciones_q2.pk
+
+			evaluacion_estud_q = eval_estudiante.objects.filter(student= estudiantes[estud_count], evaluacion_num= evaluaciones_q2.pk)
+			nota_x = f.cleaned_data['nota']
+			asistente_x = f.cleaned_data['asistente']
+
+			if (not evaluacion_estud_q.exists()):
+				eval_estudiante.objects.create(student= estudiantes[estud_count],
+					 evaluacion_num= evaluaciones_q2,
+					  nota= nota_x,
+					  asistente= asistente_x )
+
+			else:
+				evaluacion_estud_q = evaluacion_estud_q[0]
+				#evaluacion_estud_q.student = estudiantes[estud_count]
+				#evaluacion_estud_q.evaluacion_num = evaluaciones_q2.pk
+				evaluacion_estud_q.nota = nota_x
+				evaluacion_estud_q.asistente = asistente_x
+				evaluacion_estud_q.save()
+			#f['student'] = estudiantes[estud_count]
+			#f['evaluacion_num'] = evaluaciones_q2.pk
+			# hacer filtrado a ver si existe la evaluacion para el estudiante
+			# si no existe crearla, si existe actualizar los valores como d_amazon
+
 			"""
 			to_save = eval_estudianteF()
 			to_save.student = estudiantes[estud_count]
-			to_save.evaluacion_num_id = evaluaciones_q.pk
+			to_save.evaluacion_num_id = evaluaciones_q2.pk
 			to_save.nota = f.cleaned_data['nota']
 			to_save.asistente = f.cleaned_data['asistente']
 			to_save.save()
-			#f.save()
-			estud_count += 1
+			f.save()
 			"""
+			
+			estud_count += 1
+			
 
-	return redirect('carga_evaluaciones', pk = evaluaciones_q.materia.pk)
+	return redirect('carga_evaluaciones', pk = evaluaciones_q2.materia.pk)
 
+def vista_evals(request, pk_materia):
+	# profesor
+	materia_actual = materia_seccion.objects.filter(pk = pk_materia).order_by('id')[0]
+	materias_q = materia_actual
+
+	evaluaciones_q = get_mate_evals(pk_materia)
+	estudiantes  = get_estudiantes(pk_materia)
+
+	evals_estud_all = {}
+	for estudiante in estudiantes:
+		evaluacion_estud_q_all = eval_estudiante.objects.filter(student= estudiante.pk, evaluacion_num__in= evaluaciones_q)
+		
+		evals_estud = []
+		total_notas = 0
+		total_asistencias = 0
+		x_evalcount = (evaluaciones_q.count()) - (evaluacion_estud_q_all.count())
+		for evals in evaluacion_estud_q_all:
+			#evals_estud.append([evals.nota,evals.asistente])
+			total_notas += evals.nota
+			if (evals.asistente):
+				total_asistencias += 1
+			evals_estud.append(evals.nota)
+			
+		
+		for x in range(x_evalcount):
+			evals_estud.append('')
+		
+		estudiante.asistencia = (total_asistencias/evaluaciones_q.count())*100
+		estudiante.notastotal20 = (total_notas*20)/100
+		estudiante.notas100 = total_notas
+		# working print this last three values in html 
+		evals_estud_all[estudiante.pk] = evals_estud
+
+	print(evaluaciones_q.count())
+	return render(request, 'profesor/lista_notas.html', {'evals_estud_all':evals_estud_all, 'users1':estudiantes, 'evaluaciones_q':evaluaciones_q, 'materia':materias_q})
 def usu_coord_creacion(request):
 	for x in range(1):
 		ctrl_stud  = User.objects.filter(nivelusu__nivel_usu = nivel_control_estudios, is_active= True)
@@ -612,3 +705,4 @@ def usu_coord_creacion(request):
 
 	form2 = DatosAddF()	
 	return render(request, 'Coordinator/anadir_usu.html', {'users1' : ctrl_stud, 'form2':form2 })
+

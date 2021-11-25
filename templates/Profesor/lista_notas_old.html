@@ -4,19 +4,25 @@
 {% load myfilters %}
 
 {% block titu_tabla %}
-{{seccion.carrera.nombre}}
+
 <br>
-Sección {{seccion.seccion_num}}
+<div class="text-center">
+  <div class="col-md-12">
+    <h1>{{materia.materia_nom}}</h1>
+    <h1 class="text-muted" >{{materia.tipo_mate}}</h1>
+    <h1 class="text-muted" >Cortes evaluados</h1>
+    
+  </div>
+
+</div>
 {% endblock %}
 
 
 {% block table1 %}
 
 <section class="content">
+
   <div class="buttonBlockDiv">
-    <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal2" data-href="{% url 'usu_add' 1 seccion.carrera.pk  %}" data-pestana_nom="Agregar Estudiante" data-switch1 = '0' ><span class="fa fa-plus" id="iconB"></span> Agregar estudiante</a>
-    <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href="{% url 'usu_add' 2 seccion.carrera.pk  %}" data-pestana_nom="Agregar Materia"><span class="fad fa-cog" id="iconB"></span> Agregar materia</a>
-    
 
   </div>
   <br>
@@ -30,39 +36,40 @@ Sección {{seccion.seccion_num}}
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th>Nº</th>
-                  <th>Materia</th>
-                  <th>Profesor</th>
-                  <th>Nº Estudiantes</th>
-                  <th>Enlace</th>
+                  <th>Estudiante</th>
+                  {% for eval in evaluaciones_q %}
+                  <th> {{forloop.counter }} </th>
+                  {% endfor %}
+                  <th> promedio <br> (20) </th>
+                  <th> suma <br> total <br> (100) </th>
+                  <th> % Asistencia </th>
                   
 
                 </tr>
               </thead>
               <tbody>
-                {% for materia in users1 %}
+                {% for estudiante in users1 %}
                 <tr>
-                  <td>{{forloop.counter}}</td>
-                  
-                  <td>{{materia.materia_nom}}</td>
-                  {% if materia.profesor %}
-                  <td>{{materia.profesor}}</td>
-                  {% elif user.nivelesnum.ctrl_est1 %}
                   <td>
-                    <a class="btn btn-primary blancColor" data-toggle="modal" data-target="#myModal3" data-href="" data-pestana_nom="Agregar Profesor" data-switch1 = '1'> Añadir Profesor</a>
-
+                    <p class="text-left">{{estudiante.datos1.nombre}} {{estudiante.datos1.apellido}}  </p>
+                    <p class="text-muted text-left">{{estudiante.username | intcomma }} </p>
                   </td>
                   
-                  {% else %}
-                  <td>Aún no hay profesor</td>
-                  {% endif %}
-                  
-                  <td>{{materia.alumnos }}</td>
-                  
-                  
+                  {% with notasx=evals_estud_all|indexable:estudiante.pk %}
+                  {% for nota in notasx %}
                   <td>
-                    <a href= " {% url 'seccion_carrera' seccion.pk %} "><span class="btn btn-primary" > ir</span></a>
-
+                  <p class="text-left">{{nota}} </p>
+                  </td>
+                  {% endfor %}
+                  {% endwith %}
+                  <td>
+                    {{ estudiante.notastotal20 }}
+                  </td>
+                  <td>
+                    {{ estudiante.notas100 }}
+                  </td>
+                  <td>
+                    {{ estudiante.asistencia }} % 
                   </td>
                 </tr>
 
@@ -144,7 +151,7 @@ Sección {{seccion.seccion_num}}
 
               {% endif %}
               {% if forloop.counter == 2%}
-              {{field|login2:''}} 
+              {{field|addclass:'form-control'}}
               {% endif %}
               {% if forloop.counter == 3%}
               {{field|login3:''}} 
@@ -393,12 +400,15 @@ Sección {{seccion.seccion_num}}
   {% endblock %}
 
 
-  {% block jsend %}
+{% block jsend2 %}
 
 <script type="text/javascript">
 
 
   arrayDont = ['#myModal1']
+
+  started1 = 0
+  started2 = 0
   $('[data-toggle = "modal" ]').on("change keyup paste click", function(){
 
     data_target = $(this).attr('data-target');
@@ -413,79 +423,10 @@ Sección {{seccion.seccion_num}}
         submit1 = $("#submitFormB1");
         submit2 = $("#submitFormB2");
         console.log('estudiante')
-        $(userid).on("change keyup paste click", function(){
-
-          url = userid.data('url');
-
-          if ($(this)) {
-            //var username = $(this).val();
-            username = $(this).val();
-          }
-          if (username_old != username) {
-            username_old = username;
-            submit1.css('display', 'none');
-            submit2.css('display', 'block');
-          }
-          //console.log(username.length);
-          // minimous number of cedula username.length
-          if (username) {
-            if (username.length > 999999) {
-              username = username.replace(new RegExp("[ ]+", "g"), "");
-              
-            }
-          }
-          if (username) {
-            
-            $.ajax({
-              url: url,
-              data: {
-                'username': username
-              },
-              dataType: 'json',
-              success: function (data) {
-                if (data.usuario_tomado) {
-                      //alert('usu existe');
-                      console.log('usu existe');
-                      field1.css('display', 'none');
-                      field2.css('display', 'none');
-                      field1.removeAttr('required');
-                      field2.removeAttr('required');
-                      submit1.css('display', 'block');
-                      submit2.css('display', 'none');
-                    }
-                    else {
-                      //alert('usu no existe');
-                      console.log('usu no existe');
-                      field1.css('display', 'block');
-                      field2.css('display', 'block');
-                      field1.attr('required', '');
-                      field2.attr('required', '');
-                      submit1.css('display', 'block');
-                      submit2.css('display', 'none');
-                    }
-                  }
-                });
-
-          }
-          else if (!username) {
-            field1.css('display', 'none');
-            field2.css('display', 'none');
-            
-            submit1.css('display', 'block');
-            submit2.css('display', 'none');
-            
-            /*
-            $("#id_username").removeClass("form-control-neg");
-            $("#spaniconBRe").removeClass("form-control-neg");
-            $("#id_username").removeClass("form-control-accept");
-            $("#spaniconBRe").removeClass("form-control-accept");
-            $("#spaniconBRe").css('display', 'none');
-            $("#iconBRe").css('display', 'none');
-            $("#iconBRe2").css('display', 'none');
-            */
-          }
-          console.log('aactivated')
-        });
+        if (started2 == 0) {
+          check_if_chang(userid, field1 ,field2 ,submit1 ,submit2 )
+          started2 = 1;
+        }
       }
       else if (data_target.indexOf('3') > -1) {
         userid = $("#id_cedula2");
@@ -494,80 +435,11 @@ Sección {{seccion.seccion_num}}
         field2 = $("#lastname2");
         submit1 = $("#submitFormB3");
         submit2 = $("#submitFormB4");
-
-        $(userid).on("change keyup paste click", function(){
-
-          url = userid.data('url');
-
-          if ($(this)) {
-            //var username = $(this).val();
-            username = $(this).val();
-          }
-          if (username_old != username) {
-            username_old = username;
-            submit1.css('display', 'none');
-            submit2.css('display', 'block');
-          }
-          //console.log(username.length);
-          // minimous number of cedula username.length
-          if (username) {
-            if (username.length > 999999) {
-              username = username.replace(new RegExp("[ ]+", "g"), "");
-              
-            }
-          }
-          if (username) {
-            
-            $.ajax({
-              url: url,
-              data: {
-                'username': username
-              },
-              dataType: 'json',
-              success: function (data) {
-                if (data.usuario_tomado) {
-                      //alert('usu existe');
-                      console.log('usu existe');
-                      field1.css('display', 'none');
-                      field2.css('display', 'none');
-                      field1.removeAttr('required');
-                      field2.removeAttr('required');
-                      submit1.css('display', 'block');
-                      submit2.css('display', 'none');
-                    }
-                    else {
-                      //alert('usu no existe');
-                      console.log('usu no existe');
-                      field1.css('display', 'block');
-                      field2.css('display', 'block');
-                      field1.attr('required', '');
-                      field2.attr('required', '');
-                      submit1.css('display', 'block');
-                      submit2.css('display', 'none');
-                    }
-                  }
-                });
-
-          }
-          else if (!username) {
-            field1.css('display', 'none');
-            field2.css('display', 'none');
-            
-            submit1.css('display', 'block');
-            submit2.css('display', 'none');
-            
-            /*
-            $("#id_username").removeClass("form-control-neg");
-            $("#spaniconBRe").removeClass("form-control-neg");
-            $("#id_username").removeClass("form-control-accept");
-            $("#spaniconBRe").removeClass("form-control-accept");
-            $("#spaniconBRe").css('display', 'none');
-            $("#iconBRe").css('display', 'none');
-            $("#iconBRe2").css('display', 'none');
-            */
-          }
-          console.log('aactivated')
-        });
+        if (started1 == 0) {
+          check_if_chang(userid, field1 ,field2 ,submit1 ,submit2 )
+          started1 = 1;
+        }
+        
         console.log('profesor')
       }
       console.log($(this).attr('data-target'))
@@ -581,7 +453,81 @@ Sección {{seccion.seccion_num}}
 
   var username_old = '';
   
+  function check_if_chang(userid, field1 ,field2 ,submit1 ,submit2 ) {
+    $(userid).on("change keyup paste click", function(){
 
+      url = userid.data('url');
+
+      if ($(this)) {
+        //var username = $(this).val();
+        username = $(this).val();
+      }
+      if (username_old != username) {
+        username_old = username;
+        submit1.css('display', 'none');
+        submit2.css('display', 'block');
+      }
+      //console.log(username.length);
+      // minimous number of cedula username.length
+      if (username) {
+        if (username.length > 999999) {
+          username = username.replace(new RegExp("[ ]+", "g"), "");
+          
+        }
+      }
+      if (username) {
+        
+        $.ajax({
+          url: url,
+          data: {
+            'username': username
+          },
+          dataType: 'json',
+          success: function (data) {
+            if (data.usuario_tomado) {
+                  //alert('usu existe');
+                  console.log('usu existe');
+                  field1.css('display', 'none');
+                  field2.css('display', 'none');
+                  field1.removeAttr('required');
+                  field2.removeAttr('required');
+                  submit1.css('display', 'block');
+                  submit2.css('display', 'none');
+                }
+                else {
+                  //alert('usu no existe');
+                  console.log('usu no existe');
+                  field1.css('display', 'block');
+                  field2.css('display', 'block');
+                  field1.attr('required', '');
+                  field2.attr('required', '');
+                  submit1.css('display', 'block');
+                  submit2.css('display', 'none');
+                }
+              }
+            });
+
+      }
+      else if (!username) {
+        field1.css('display', 'none');
+        field2.css('display', 'none');
+        
+        submit1.css('display', 'block');
+        submit2.css('display', 'none');
+        
+        /*
+        $("#id_username").removeClass("form-control-neg");
+        $("#spaniconBRe").removeClass("form-control-neg");
+        $("#id_username").removeClass("form-control-accept");
+        $("#spaniconBRe").removeClass("form-control-accept");
+        $("#spaniconBRe").css('display', 'none');
+        $("#iconBRe").css('display', 'none');
+        $("#iconBRe2").css('display', 'none');
+        */
+      }
+      console.log('aactivated')
+    });
+  }
   
   //old
 

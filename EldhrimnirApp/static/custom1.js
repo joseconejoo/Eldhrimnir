@@ -67,7 +67,10 @@
        //window.print("hola")
 
    });
-
+    // tooltip help text
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
 
 /*
 

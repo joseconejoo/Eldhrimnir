@@ -207,3 +207,11 @@ input[type=number] {
 }
 
 /* end profesor frontend cargar evaluaciones */
+
+.a_like_no {
+  color:  #212529;
+}
+.a_like_no:hover {
+    color: #212529;
+    text-decoration: none;
+}
