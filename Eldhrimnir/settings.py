@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-%dlspq@7k%$%tw(e$9mk^^n=8)@9)7l$*tf+ec+920l_lx#qpw
 DEBUG = True
 
 ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['klimssx2.pythonanywhere.com','127.0.0.1']
+ALLOWED_HOSTS = ['klimssx2.pythonanywhere.com','127.0.0.1', '192.168.1.102']
 
 # Application definition
 

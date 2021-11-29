@@ -6,7 +6,15 @@
 {% block titu_tabla %}
 
 <br>
+{% if not titulo %} 
 Materias asignadas
+{% else %}
+
+{{titulo}}
+
+{% endif %}
+
+
 {% endblock %}
 
 
@@ -45,13 +53,14 @@ Materias asignadas
                     <p class="text-left">{{materia.materia_nom}} </p>
                     
                     <p class="text-muted text-left">{{materia.tipo_mate}} </p>
+                    <p class="text-muted text-left"> Sección: {{materia.seccion.seccion_num }} </p>
                   </td>
 
                   
                   <td class="text-center">
                     <span class="textBigger1"> {{materia.alumnos }} </span>
                       <br>
-                     <a href= "#"><span class="btn btn-primary" >Ver lista</span>
+                     <a href= "{% url 'lista2_estud_materias_detal' materia.pk %}"><span class="btn btn-primary" >Ver lista</span>
                      </a>
                   </td>
 

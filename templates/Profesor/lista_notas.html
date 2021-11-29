@@ -10,6 +10,7 @@
   <div class="col-md-12">
     <h1>{{materia.materia_nom}}</h1>
     <h1 class="text-muted" >{{materia.tipo_mate}}</h1>
+    <h1 class="text-muted" > Sección: {{materia.seccion.seccion_num }}</h1>
     <h1 class="text-muted" >Cortes evaluados</h1>
     
   </div>
@@ -54,7 +55,7 @@
                 {% for estudiante in users1 %}
                 <tr>
                   <td>
-                    <p class="text-left">{{estudiante.datos1.nombre}} {{estudiante.datos1.apellido}}  </p>
+                    <b class="text-left">{{estudiante.datos1.nombre}} {{estudiante.datos1.apellido}}  </b>
                     <p class="text-muted text-left">{{estudiante.username | intcomma }} </p>
                   </td>
                   
@@ -71,25 +72,25 @@
                       {% if not forloop.counter|divisibleby:"2" %}
                       <tr>
                       <td class="negritas">
-                        nº {{forloop.counter}}
+                        <b> Eval {{forloop.counter}} </b>
                         <br>
                         <span>
                           {% if nota %}
                           {{nota}}
                           {% else %}
-                          No cargada aún
+                          No cargada
                           {% endif %}
                         </span>
                       </td>
                       {% else %}
                       <td class="negritas">
-                        nº {{forloop.counter}}
+                        <b> Eval {{forloop.counter}} </b>
                         <br>
                         <span>
                           {% if nota %}
                           {{nota}}
                           {% else %}
-                          No cargada aún
+                          No cargada
                           {% endif %}
                         </span>
                       </td>
@@ -100,7 +101,7 @@
                       
 
                       {% empty %}
-                      Aún no hay notas
+                      Sin planificación
                       {% endfor %}
                       {% endwith %}
 
@@ -113,7 +114,9 @@
                   <td>
                     {{ estudiante.notas100 }}
                   </td>
+                  {% comment %}
                   <br>
+                  {% endcomment %}
                   <td>
                     {{ estudiante.asistencia }} % 
                   </td>

@@ -539,7 +539,7 @@ def carga_evaluaciones(request, pk):
 		print(estud_list)
 		
 		# end form2 carga estudiantes notas
-		#materias_q = materia_actual
+		materias_q = materia_actual
 		#messages.success(request, 'Fecha no valida.')
 		min_evals = materia_actual.tipo_mate.num_eval_min
 		# min_evals*5 that is min value for evaluations
@@ -593,11 +593,8 @@ def carga_evaluaciones(request, pk):
 		if (total_percent == 100):
 			ver_notas_lista = True
 
-		per_notas_ver = False
-		if (request.user.nivelusu.nivel_usu.pk in [nivel_control_estudios, nivel_profesor] ):
-			per_notas_ver = True
 
-		return render(request, 'Profesor/carga_evaluaciones.html', {'per_notas_ver':per_notas_ver, 'ver_notas_lista':ver_notas_lista, 'estud_list':estud_list, 'form2m':form2m, 'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
+		return render(request, 'Profesor/carga_evaluaciones.html', {'ver_notas_lista':ver_notas_lista, 'estud_list':estud_list, 'form2m':form2m, 'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
 def carga_eval(request, pk_eval, pk_materia):
 	# profesor
 	evaluaciones_q2 = evaluacion_materia.objects.filter(pk= pk_eval,materia = pk_materia).order_by('id')
@@ -669,36 +666,31 @@ def vista_evals(request, pk_materia):
 
 	evals_estud_all = {}
 	for estudiante in estudiantes:
-		#evaluacion_estud_q_all = eval_estudiante.objects.filter(student= estudiante.pk, evaluacion_num__in= evaluaciones_q)
+		evaluacion_estud_q_all = eval_estudiante.objects.filter(student= estudiante.pk, evaluacion_num__in= evaluaciones_q)
 		
 		evals_estud = []
 		total_notas = 0
 		total_asistencias = 0
-		#x_evalcount = (evaluaciones_q.count()) - (evaluacion_estud_q_all.count())
-		for evaluacion in evaluaciones_q:
-			evals = eval_estudiante.objects.filter(student= estudiante.pk, evaluacion_num= evaluacion.pk)
-			if (evals):
-				# append nota
-				evals = evals[0]
-				#evals_estud.append([evals.nota,evals.asistente])
-				total_notas += evals.nota
-				if (evals.asistente):
-					total_asistencias += 1
-				evals_estud.append(evals.nota)
+		x_evalcount = (evaluaciones_q.count()) - (evaluacion_estud_q_all.count())
+		for evals in evaluacion_estud_q_all:
+			#evals_estud.append([evals.nota,evals.asistente])
+			total_notas += evals.nota
+			print ("\n\n\n\n ========================")
+			print (evaluaciones_q[0].pk)
+			print (evaluacion_estud_q_all[0].evaluacion_num)
+			if (evals.evaluacion_num in evaluaciones_q):
+				print (True)
 			else:
-				# append nothing
-				evals_estud.append('')
-				pass
-
+				print (False)
+			if (evals.asistente):
+				total_asistencias += 1
+			evals_estud.append(evals.nota)
 			
-		"""
+		
 		for x in range(x_evalcount):
 			evals_estud.append('')
-		"""
-		if (evaluaciones_q.count() > 0):
-			estudiante.asistencia = (total_asistencias/evaluaciones_q.count())*100
-		else:
-			estudiante.asistencia = 0
+		
+		estudiante.asistencia = (total_asistencias/evaluaciones_q.count())*100
 		estudiante.notastotal20 = (total_notas*20)/100
 		estudiante.notas100 = total_notas
 		# working print this last three values in html 
@@ -706,102 +698,6 @@ def vista_evals(request, pk_materia):
 
 	
 	return render(request, 'Profesor/lista_notas.html', {'evals_estud_all':evals_estud_all, 'users1':estudiantes, 'evaluaciones_q':evaluaciones_q, 'materia':materias_q})
-
-def ver_materias(request):
-	# estudiante
-	materias_q = materia_seccion.objects.filter(materiasestu__student = request.user.pk).order_by('id')
-	for materia in materias_q:
-		materia.alumnos = MateriasEstu.objects.filter(materia = materia.pk).order_by('id').count()
-
-	titulo = 'Mis materias'
-	return render(request, 'Profesor/carreras_asignadas.html', {'titulo':titulo, 'users1': materias_q})
-
-def vista_materias_evals_estud(request, pk_estud):
-	# estudiante
-	materias_q = MateriasEstu.objects.filter(student= pk_estud)
-	
-
-	evals_estud_all = {}
-
-	for materia in materias_q:
-		evaluaciones_q = get_mate_evals(materia.materia.pk)
-
-		evals_estud = []
-		total_notas = 0
-		total_asistencias = 0
-		for evaluacion in evaluaciones_q:
-			evals = eval_estudiante.objects.filter(student= pk_estud, evaluacion_num= evaluacion.pk)
-			if (evals):
-				# append nota
-				evals = evals[0]
-				#evals_estud.append([evals.nota,evals.asistente])
-				total_notas += evals.nota
-				if (evals.asistente):
-					total_asistencias += 1
-				evals_estud.append(evals.nota)
-			else:
-				# append nothing
-				evals_estud.append('')
-				pass
-
-			
-		"""
-		for x in range(x_evalcount):
-			evals_estud.append('')
-		"""
-		if (evaluaciones_q.count() > 0):
-			materia.asistencia = (total_asistencias/evaluaciones_q.count())*100
-		else:
-			materia.asistencia = 0
-		materia.notastotal20 = (total_notas*20)/100
-		materia.notas100 = total_notas
-		# working print this last three values in html 
-		evals_estud_all[materia.pk] = evals_estud
-
-
-
-	usuario_q = User.objects.get(pk = pk_estud )
-	
-	return render(request, 'EstudianteT/lista_notas2.html', {'usuario_q':usuario_q,'evals_estud_all':evals_estud_all, 'users1':materias_q, 'evaluaciones_q':evaluaciones_q, 'materia':materias_q})
-
-
-def lista2_estud_materias_detal(request, pk_materia):
-	#users = User.objects.all().order_by('id')
-	materias_q = materia_seccion.objects.filter(pk= pk_materia)
-	if (materias_q):
-		materias_q = materias_q[0]
-	users = User.objects.filter(materiasestu__materia= pk_materia)
-
-	titulo = 'Lista de estudiantes'
-	estud_list_mate = True
-	
-	return render(request, 'Coordinator/usu_accept.html',{'estud_list_mate':estud_list_mate, 'titulo':titulo, 'materias_q':materias_q, 'users1':users})
-def lista3_estud_list(request):
-	#users = User.objects.all().order_by('id')
-	materias_q = materia_seccion.objects.filter(materiateacher__profesor= request.user.pk)
-	for materia in materias_q:
-		users = User.objects.filter(materiasestu__materia= materia)
-
-		if (users):
-			users = users | users
-
-	titulo = 'Lista de todos mis estudiantes'
-	
-	return render(request, 'Coordinator/usu_accept.html',{'titulo':titulo, 'users1':users})
-def lista4_estud_list(request):
-	#users = User.objects.all().order_by('id')
-	users = User.objects.filter(nivelusu__nivel_usu= nivel_profesor )
-
-	titulo = 'Lista de todos los profesores'
-	
-	return render(request, 'Coordinator/usu_accept.html',{'titulo':titulo, 'users1':users})
-def lista5_estud_list(request):
-	#users = User.objects.all().order_by('id')
-	users = User.objects.filter(nivelusu__nivel_usu= nivel_estudiante )
-
-	titulo = 'Lista de todos los estudiantes'
-	
-	return render(request, 'Coordinator/usu_accept.html',{'titulo':titulo, 'users1':users})
 def usu_coord_creacion(request):
 	for x in range(1):
 		ctrl_stud  = User.objects.filter(nivelusu__nivel_usu = nivel_control_estudios, is_active= True)

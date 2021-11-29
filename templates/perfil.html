@@ -56,6 +56,10 @@
             <!-- Profesor -->
             <p class="text-muted text-center">{{usu1.nivelusu.nivel_usu.nom_nivel}}</p>
             {% endif %}
+            {% if usu1.nivelusu.nivel_usu.nivel_num == 3 %}
+            <!-- estudiante y todos -->
+            <p class="text-muted text-center">{{usu1.nivelusu.nivel_usu.nom_nivel}}</p>
+            {% endif %}
 
             {% if niv1.estud %}
             <ul class="list-group list-group-unbordered mb-3">
@@ -97,7 +101,7 @@
               <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Timeline</a></li>
               {% endcomment %}
               {% comment %}
-              HABILITARDESPUES
+              HABILITAR DESPUES
               <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a></li>
               {% endcomment %}
             </ul>

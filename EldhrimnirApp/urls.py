@@ -9,7 +9,8 @@ urlpatterns = [
     path('perfil', views.perfil_redirect, name= 'perfil'),
     path('perfil/<int:pk>',views.perfil_u, name='perfil_u'),
     
-    path('aceptar-usuarios', views.accept_usu1, name='accept_usu1'),
+    #path('aceptar-usuarios', views.accept_usu1, name='accept_usu1'),
+    path('lista-usuarios', views.accept_usu1, name='accept_usu1'),
     path('User?12@#|2aprove?/<int:pk>', views.usu_accepted1, name='usu_accepted1'),
     path('User?12@#|2del?/<int:pk>', views.usu_deleted1, name='usu_deleted1'),
     path('usu_anadir', views.usu_coord_creacion, name= 'usu_coord_creacion'),
@@ -25,6 +26,15 @@ urlpatterns = [
     path('profesor/mis_materias', views.materias_profesor, name = 'materias_profesor'),
     path('profesor/<int:pk>/cargar_eval/', views.carga_evaluaciones, name = 'carga_evaluaciones' ),
     path('profesor/<int:pk_materia>/vista_evals', views.vista_evals, name = 'vista_evals' ),
+
+    path('estudiante/<int:pk_estud>/vista_evals', views.vista_materias_evals_estud, name = 'vista_materias_evals_estud' ),
+    path('estudiante/mis_materias', views.ver_materias, name = 'ver_materias' ),
+
+    path('lista/estudiantes/<int:pk_materia>', views.lista2_estud_materias_detal, name = 'lista2_estud_materias_detal' ),
+    path('lista/mis/estudiantes', views.lista3_estud_list, name = 'lista3_estud_list' ),
+    path('lista/todos_los/profesores', views.lista4_estud_list, name = 'lista4_estud_list' ),
+    path('lista/todos_los/estudiantes', views.lista5_estud_list, name = 'lista5_estud_list' ),
+    
 
     path('api/profesor/materia_add_eval/num_eval/<int:pk_eval>/<int:pk_materia>/materia', views.carga_eval, name= 'carga_eval' ),
     path('api/usuadd/<int:type1>/<int:pk>/<int:pk_materia>', views.usu_add, name='usu_add'),

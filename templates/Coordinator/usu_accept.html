@@ -5,7 +5,30 @@
 
 
 {% block titu_tabla %}
+{% if not titulo %}
 Lista de usuarios
+{% elif titulo and estud_list_mate %}
+<h1>
+  {{titulo }}
+</h1>
+<h1>
+  {{materias_q.materia_nom}}
+</h1>
+<h1 class="text-muted">
+  {{materias_q.tipo_mate }}
+</h1>
+<h1 class="text-muted">
+  Sección: {{materias_q.seccion.seccion_num }}
+</h1>
+
+{% elif titulo %}
+<h1>
+  {{titulo }}
+</h1>
+
+{% endif %}
+
+
 {% endblock %}
 
 

@@ -41,7 +41,7 @@ class carreras(models.Model):
 	date_edit = models.DateTimeField(blank=True)
 
 class carrera_seccion(models.Model):
-	seccion_num = models.IntegerField(unique= True)
+	seccion_num = models.IntegerField()
 	carrera = models.ForeignKey(carreras,on_delete=models.CASCADE, blank=True)
 	user_edit = models.ForeignKey('auth.User',on_delete=models.SET_NULL, blank=True, null = True)
 	date_edit = models.DateTimeField(blank=True)

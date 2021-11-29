@@ -60,7 +60,7 @@ class materia_seccion_F(forms.ModelForm):
 	class Meta:
 		model = materia_seccion
 		fields = {'materia_nom','tipo_mate'}
-		#field_order = ['tipo_mate','materia_nom']
+	field_order = ['materia_nom','tipo_mate']
 
 class carrera_seccion_F(forms.ModelForm):
 	class Meta:

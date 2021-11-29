@@ -22,6 +22,7 @@ Formacion Critica
         <div class="col-md-12">
           <h1>{{materia.materia_nom}}</h1>
           <h1 class="text-muted" >{{materia.tipo_mate}}</h1>
+          <h1 class="text-muted" > Sección: {{materia.seccion.seccion_num }}</h1>
           <h1>Planificación: {{materia.total_percent }}/100 %</h1>
         </div>
 
@@ -36,15 +37,27 @@ Formacion Critica
       {% endcomment %}
 
     </div>
+    
+    
     <div class="buttonBlockDiv">
+      <!-- check if user is profesor -->
+      {% if user.nivelusu.nivel_usu.nivel_num == 4 %}
       {% if allow_anadir_eval %}
       <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href=" {% url 'carga_evaluaciones' materia.pk %} " data-pestana_nom="Agregar Evaluación2" ><span class="fa fa-plus" id="iconB"></span> Agregar Evaluación
       </a>
       {% else %}
-      <a class="btn btn-primary redondear_borde blancColor disabled1 disabled" data-toggle="modal" data-target="#" data-href="" data-pestana_nom="Agregar Evaluación"><span class="fa fa-plus" id="iconB"></span> Agregar Evaluación
-      </a>
-      {% endif %}
 
+      <span tabindex="0" data-toggle="tooltip" data-placement="top" title="Planificación cargada exitosamente  "> 
+        <a class="btn btn-primary redondear_borde blancColor disabled1 disabled" data-toggle="modal" data-target="#" data-href="" data-pestana_nom="Agregar Evaluación"><span class="fa fa-plus" id="iconB"></span> Agregar Evaluación
+        </a>        
+      </span>
+
+      {% endif %}
+      {% endif %}
+      <!-- end if nivel profesor -->
+
+      <!-- permiso ver notas -->
+      {% if per_notas_ver %}
       <!-- start ver notas -->
       {% if ver_notas_lista %}
       <a class="btn btn-primary redondear_borde blancColor" href="{% url 'vista_evals' materia.pk %}" data-toggle="" data-target="#" data-href="  " data-pestana_nom="" ><span class="fal fa-table" id="iconB"></span> Ver notas cargadas
@@ -55,10 +68,13 @@ Formacion Critica
         </a>
       </span>
 
-      {% endif %}
 
       <!-- end ver notas -->
     </div>
+    {% endif %}
+    <!-- end permiso ver notas -->
+    {% endif %}
+    <!-- end check if user is profesor -->
   </div><!-- /.container-fluid -->
 
 </section>
@@ -95,6 +111,8 @@ Formacion Critica
               </div>
               <br>
               <div class="row">
+                <!-- check if user is profesor to cargar notas -->
+                {% if user.nivelusu.nivel_usu.nivel_num == 4 %}
                 <div class="col-12 buttoncenterdiv" >
                   {% if evaluacion.permiso_cargar %}
                   <a class="btn btn-primary redondear_borde blancColor buttoncenter" data-toggle="modal" data-target="#myModal2" data-href=" {% url 'carga_eval' evaluacion.pk materia.pk %} " data-pestana_nom="Carga de Notas nº{{forloop.counter}}" data-ponderacion="{{ evaluacion.ponderacion }}"><span class="fa fa-plus0" id="iconB"></span> Cargar notas
@@ -107,6 +125,8 @@ Formacion Critica
 
                   {% endif %}
                 </div>
+                {% endif %}
+                <!-- end check if user is profesor to cargar notas -->
                 {% comment %}
                 <div class="col-6">
                   {% if allow_anadir_eval %}
@@ -135,6 +155,14 @@ Formacion Critica
             {% endcomment %}
           </div>
         </div>
+        {% empty %}
+        <h4> 
+          Aún no se ha cargado ninguna evaluación
+          {% if user.nivelusu.nivel_usu.nivel_num == 3 %}
+          <br>
+          Intente consultar más tarde
+          {% endif %}
+        </h4>
         {% endfor %}
 
 

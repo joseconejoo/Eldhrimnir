@@ -178,7 +178,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="{% url 'accept_usu1' %}" class="nav-link">
+            <a href="{% url 'lista4_estud_list' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Lista de Profesores
@@ -186,13 +186,14 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{% url 'lista5_estud_list' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Lista de Estudiantes
               </p>
             </a>
           </li>
+          <!-- end control de estudio -->
           {% endif %}
 
           {% if user.nivelusu.nivel_usu.nivel_num == 4 %}
@@ -207,23 +208,41 @@
           </li>
 
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{% url 'lista3_estud_list' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p class="too_long">
                 Lista de todos mis estudiantes
               </p>
             </a>
           </li>
+          <!-- end Profesor -->
+
           {% endif %}
-          {% if user.estud %}
+          {% if user.nivelusu.nivel_usu.nivel_num == 3 %}
+          <!-- Estudiante -->
+
+
           <li class="nav-item">
-            <a href="/" class="nav-link">
+            <a href="{% url 'ver_materias' %}" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Planificaciones
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{% url 'vista_materias_evals_estud' user.pk %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Notas
               </p>
             </a>
           </li>
+
+
+
+          <!-- end Estudiante -->
           {% endif %}
 
 
