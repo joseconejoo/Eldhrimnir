@@ -12,7 +12,7 @@ from django.contrib.auth import (
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .forms import eval_estudianteF, evaluacion_materiaF, actu_contra, Datos2rF, materias_listF, DatosAddF, materia_seccion_F, carrera_seccion_F, carreras_add, NivelesNumF1, DatosF, AuthenticationForm2, UserCreationForm2
-from .models import eval_estudiante, Tipo_Materia, evaluacion_materia, MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
+from .models import permisos_bd, eval_estudiante, Tipo_Materia, evaluacion_materia, MateriaTeacher, MateriasEstu, NivelesNum2, NivelUsu, materia_seccion, carrera_seccion ,carreras, Datos1, NivelesNum
 
 from .func1 import prof_add_materia, est_add_materia
 
@@ -24,6 +24,18 @@ from datetime import datetime, timedelta
 
 from django.forms import formset_factory
 
+
+def print_errors(request, form2):
+	for error in form2.errors:
+		messages.error(request,'{}'.format(form2.errors[error]) )
+
+def check_user_level_exists(usu_ex):
+	nivel_usu1x = NivelUsu.objects.filter(user = usu_ex)
+	result = False
+	if (nivel_usu1x.exists() or usu_ex.is_superuser ):
+		result = True
+	return result
+
 teorica = Tipo_Materia.objects.filter(pk=1)[0].num_eval_min
 practica = Tipo_Materia.objects.filter(pk=2)[0].num_eval_min
 teoricayprac = Tipo_Materia.objects.filter(pk=3)[0].num_eval_min
@@ -32,6 +44,13 @@ global nivel_estudiante
 nivel_estudiante = 3
 nivel_control_estudios = 1
 nivel_profesor = 4
+
+
+def get_perm(pk_perm):
+	return permisos_bd.objects.filter(pk= pk_perm)[0]
+permiso_a_ctrl_seccion  = get_perm(1)
+permiso_a_ctrl_estudiante = get_perm(2)
+permiso_a_prof_evaluaciones = get_perm(3)
 
 
 def get_mate_evals(pk):
@@ -102,7 +121,7 @@ def perfil_u(request, pk):
 		#if (Datos1.objects.get(usuario=pk).nombre):
 		# new login password nuevo login contraseña
 		if (request.user.pk != pk):
-			# falta message
+			messages.error(request, 'El usuario no tiene un perfil creado. ')
 			return redirect ('perfil')
 		print (condition2,'\n\n')
 		registred = None
@@ -392,12 +411,13 @@ def usu_add(request, type1, pk, pk_materia):
 			post.usuario =  user_to_register
 			#user_to_register.NivelUsu.nivel_usu = nivel_estudiante
 			#user_to_register.save()
+			post.save()
+
 			if (type1 == 1):
 				NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_estudiante) )
 			if (type1 == 2):
 				NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_profesor) )				
 			
-			post.save()
 
 			if (type1 == 1):
 				#modulo de anadir materias
@@ -440,13 +460,40 @@ def usu_add(request, type1, pk, pk_materia):
 			return redirect(seccion_carrera,pk=pk)
 		return redirect(seccion_carrera,pk=pk)
 
-def usu_add_ctrl_estud(request):
+def usu_add_ctrl_estud(request, nivel_opci = 1):
 	#coordinador
+	#choose = {1:nivel_control_estudios, 2: nivel_profesor}
+	#nivel_choose = choose[nivel_opci]
+
 	if request.method == 'POST':
 		# form2 from usu_coord_creacion
 		form2 = DatosAddF(request.POST)
 		username = request.POST.get('cedula', None)
-		usu_ex = User.objects.filter(username__exact=username).exists()
+		usu_ex = User.objects.filter(username__exact=username)
+
+		if (usu_ex.exists() ):
+			usu_ex2 = usu_ex[0]
+			# check if user has another level
+			user_has_level = check_user_level_exists(usu_ex2)
+
+			if (user_has_level):
+				messages.error(request, 'El usuario {} ya tiene un nivel asignado'.format(usu_ex2.username))
+				return redirect(usu_add_ctrl_estud)
+
+
+
+		# control de estudios is unique so, if a user have it remove
+		usu_nivel_find = NivelUsu.objects.filter(nivel_usu= nivel_control_estudios)
+		if usu_nivel_find.exists() :
+			usu_nivel_find = usu_nivel_find[0]
+			usu_nivel_find.delete()
+
+		# check if errors
+		nombre_usu = request.POST.get('nombre', None)
+		if (nombre_usu):
+			print_errors(request, form2)
+
+		# add a user with nivel
 
 		if form2.is_valid():
 			post = form2.save(commit = False)
@@ -458,13 +505,15 @@ def usu_add_ctrl_estud(request):
 			#user_to_register.NivelUsu.nivel_usu = nivel_estudiante
 			#user_to_register.save()
 
-
-			NivelUsu.objects.create(user=user_to_register , nivel_usu= NivelesNum2.objects.get(pk=nivel_control_estudios) )
-			
 			post.save()
 
+			nivel = NivelesNum2.objects.get(pk=nivel_control_estudios)
+			NivelUsu.objects.create(user=user_to_register , nivel_usu= nivel )
+
+			messages.success(request, 'Cambio realizado exitosamente')
 			return redirect(usu_add_ctrl_estud)
-		elif(User.objects.filter(username=username).exists()):
+		elif(usu_ex.exists() ):
+
 			#form special
 			#modulo de anadir materias
 			user_to_register = User.objects.get(username=username)
@@ -478,7 +527,7 @@ def usu_add_ctrl_estud(request):
 				nivel_usu1x.save()
 			else:
 				NivelUsu.objects.create(user=user_to_register , nivel_usu= nivel )
-
+			messages.success(request, 'Cambio realizado exitosamente')
 			return redirect(usu_add_ctrl_estud)
 
 
@@ -507,7 +556,50 @@ def carga_evaluaciones(request, pk):
 			errors = 0
 			for evaluacion in evaluaciones_q:
 				total_percent += evaluacion.ponderacion
+			# start validation
+			materias_q = materia_actual
+			estudiantes  = get_estudiantes(materias_q)
+			#estudiantes = User.objects.filter(materiasestu__materia= materias_q ,nivelusu__nivel_usu = nivel_estudiante, is_active= True).order_by('id')
+			form2m = formset_factory(eval_estudianteF, extra= estudiantes.count() )
+			
+			estu_count = 1
+			estud_list = {}
+			for estudiante in estudiantes:
+				estud_list[estu_count] = estudiante
+				estu_count += 1
+				
+			print(estud_list)
+			
+			# end form2 carga estudiantes notas
+			#materias_q = materia_actual
+			#messages.success(request, 'Fecha no valida.')
+			min_evals = materia_actual.tipo_mate.num_eval_min
+			# min_evals*5 that is min value for evaluations
+			evaluaciones_q = get_mate_evals(pk)
+			total_percent = 0
+			total_evals = 0
+			for evaluacion in evaluaciones_q:
+				total_percent += evaluacion.ponderacion
+				total_evals += 1
 
+			verif1 = min_evals-total_evals
+			#print (verif1)
+			to_reajust = 0
+			if (verif1 > 0):
+				# multiply by 5 because is the minimun
+				verif1 = (verif1 - 1)
+				total_percent += verif1 * 5
+				to_reajust = verif1 * 5
+
+			#reajust total_percent to print
+			materias_q.total_percent = total_percent - to_reajust
+
+			if (total_percent < 70):
+				max_value = 30
+			else:
+				max_value = (-total_percent) + 100
+				
+			# end validation nota
 			if (total_percent > 100 ):
 				messages.error(request, 'Porcentaje total no puede ser mayor al 100 %')
 				print('not allowed')
@@ -567,6 +659,7 @@ def carga_evaluaciones(request, pk):
 		else:
 			max_value = (-total_percent) + 100
 
+
 		date_min_value = timezone.now() + timedelta(1)
 		date_min_value = str(date_min_value.day) +'/'+ str(date_min_value.month)+'/'+ str(date_min_value.year)
 		#print(date_min_value)
@@ -583,9 +676,18 @@ def carga_evaluaciones(request, pk):
 			limite = eval1.fecha + timedelta(5)
 			#print(ahoramismo, '\n', limite)
 			eval1.permiso_cargar = False
-
+			eval1.tooltip_title = 'Se podra cargar el {} y 5 dias posteriores'.format(eval1.fecha)
 			if ((ahoramismo >= eval1.fecha) and (ahoramismo <= limite) ):
+				eval1.permiso_cargar = True			
+			cargar_fuera_tiempo = get_perm(3)
+			if (cargar_fuera_tiempo.estado_perm):
 				eval1.permiso_cargar = True
+			check_if_eval_has_evaluated = eval_estudiante.objects.filter(evaluacion_num = eval1.pk)
+			#if (eval1.permiso_cargar and check_if_eval_has_evaluated.exists() ):
+			if (check_if_eval_has_evaluated.exists() ):
+				eval1.permiso_cargar = False
+				eval1.cargada = True
+				eval1.tooltip_title = 'Ya se han cargado notas en esta evaluación '
 
 
 		#Ver notas cargadas
@@ -596,6 +698,8 @@ def carga_evaluaciones(request, pk):
 		per_notas_ver = False
 		if (request.user.nivelusu.nivel_usu.pk in [nivel_control_estudios, nivel_profesor] ):
 			per_notas_ver = True
+
+
 
 		return render(request, 'Profesor/carga_evaluaciones.html', {'per_notas_ver':per_notas_ver, 'ver_notas_lista':ver_notas_lista, 'estud_list':estud_list, 'form2m':form2m, 'allow_anadir_eval':allow_anadir_eval, 'date_min_value':date_min_value, 'max_value':max_value, 'evaluaciones': evaluaciones_q, 'materia': materias_q,'form1': form})
 def carga_eval(request, pk_eval, pk_materia):
@@ -697,6 +801,7 @@ def vista_evals(request, pk_materia):
 		"""
 		if (evaluaciones_q.count() > 0):
 			estudiante.asistencia = (total_asistencias/evaluaciones_q.count())*100
+			estudiante.asistencia = float("{:.2f}".format(estudiante.asistencia) )
 		else:
 			estudiante.asistencia = 0
 		estudiante.notastotal20 = (total_notas*20)/100
@@ -717,7 +822,7 @@ def ver_materias(request):
 	return render(request, 'Profesor/carreras_asignadas.html', {'titulo':titulo, 'users1': materias_q})
 
 def vista_materias_evals_estud(request, pk_estud):
-	# estudiante
+	# estudiante notas
 	materias_q = MateriasEstu.objects.filter(student= pk_estud)
 	
 
@@ -762,6 +867,7 @@ def vista_materias_evals_estud(request, pk_estud):
 
 	usuario_q = User.objects.get(pk = pk_estud )
 	
+	#EstudianteT/lista_notas2.html
 	return render(request, 'EstudianteT/lista_notas2.html', {'usuario_q':usuario_q,'evals_estud_all':evals_estud_all, 'users1':materias_q, 'evaluaciones_q':evaluaciones_q, 'materia':materias_q})
 
 
@@ -802,7 +908,24 @@ def lista5_estud_list(request):
 	titulo = 'Lista de todos los estudiantes'
 	
 	return render(request, 'Coordinator/usu_accept.html',{'titulo':titulo, 'users1':users})
+def lista6_permisos(request):
+	#coordinador
+	users = permisos_bd.objects.all()
+	titulo = 'Lista de permisos'
+
+	return render(request, 'Coordinator/usu_accept_2.html',{'titulo':titulo, 'users1':users})
+
+def perm_switch(request, pk_perm):
+	#coordinador
+	permission = get_perm(pk_perm)
+	permission.estado_perm = not (permission.estado_perm)
+	permission.save()
+
+	messages.success(request, 'El permiso a cambiado exitosamente')
+
+	return redirect ('lista6_permisos')
 def usu_coord_creacion(request):
+	# coordinador
 	for x in range(1):
 		ctrl_stud  = User.objects.filter(nivelusu__nivel_usu = nivel_control_estudios, is_active= True)
 		cargo = NivelesNum2.objects.get(pk = nivel_control_estudios)
@@ -812,6 +935,7 @@ def usu_coord_creacion(request):
 		else:
 			for user in ctrl_stud:
 				user.cargo1 = cargo.nom_nivel
+				#user.cambiar = True
 
 
 	form2 = DatosAddF()	

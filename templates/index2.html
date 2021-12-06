@@ -41,6 +41,7 @@
 
 
 	<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
 	<script type="text/javascript">
 		/*
 		$('input').blur();
@@ -48,3 +49,69 @@
 	</script>
 </body>
 </html>
+
+
+
+<!-- begin alerts -->
+{% if messages %}
+{% comment %}
+<ul class="messages">
+  {% endcomment %}
+
+  {% for message in messages %}
+  {% if message.tags == 'success' %}
+    <script type="text/javascript"> 
+      console.log('{{message}}');
+      $(document).Toasts('create', {
+        class: 'bg-success', 
+        title: 'Hecho',
+        delay: 750,
+        //subtitle: '',
+        body: '{{message}}'
+      })
+    </script>
+  {% endif %}
+
+  {% if message.tags == 'error' %}
+    <script type="text/javascript"> 
+      console.log('{{message}}');
+      $(document).Toasts('create', {
+        class: 'bg-danger', 
+        title: 'Error',
+        delay: 750,
+        //subtitle: '',
+        body: '{{message}}'
+      })
+    </script>
+  {% endif %}
+
+  {% comment %}
+  <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+  {% endcomment %}
+  {% endfor %}
+
+  {% comment %}
+</ul>
+{% endcomment %}
+{% endif %}
+<!-- end alerts -->
+
+<!-- field.errors errores -->
+{% if form.errors %}
+
+<script type="text/javascript"> 
+  var close = document.getElementsByClassName("closebtn");
+  var i;
+
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function(){
+      var div = this.parentElement;
+      div.style.opacity = "0";
+      setTimeout(function(){ div.style.display = "none"; }, 600);
+    }
+  }
+
+</script>
+
+{% endif %}
+<!-- end field.errors errores -->

@@ -1,0 +1,202 @@
+{% extends 'table_ind.html' %}
+{% load static %}
+{% load humanize %}
+
+
+
+{% block titu_tabla %}
+{% if not titulo %}
+Lista de usuarios
+{% elif titulo and estud_list_mate %}
+<h1>
+  {{titulo }}
+</h1>
+<h1>
+  {{materias_q.materia_nom}}
+</h1>
+<h1 class="text-muted">
+  {{materias_q.tipo_mate }}
+</h1>
+<h1 class="text-muted">
+  Sección: {{materias_q.seccion.seccion_num }}
+</h1>
+
+{% elif titulo %}
+<h1>
+  {{titulo }}
+</h1>
+
+{% endif %}
+
+
+{% endblock %}
+
+
+
+
+{% block table1 %}
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- /.card-header -->
+          <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Nº</th>                  
+                  <th>Permiso</th>
+                  <th>Estado</th>
+                  <th>Activar/Desactivar</th>
+
+                  {% comment %}
+                  <th>Aprobar</th>
+                  {% endcomment %}
+
+                </tr>
+              </thead>
+              <tbody>
+                {% for users in users1 %}
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td>{{users.Nombre }}</td>
+                  <td>
+                    {% if users.estado_perm %}
+                    <!--
+                    <i class="fa fa-check" id="iconB" style="color:rgba(0, 255, 0,0.95);">  </i>
+                    -->
+                    <i class="fa fa-check" id="iconB" style="color: rgb(56 106 56 / 95%)">  </i>
+                    
+                    Activado
+                    {% elif not users.estado_perm %}
+                    <i class="fa fa-times" id="iconB" style="color:rgba(255, 0, 0,0.95);"></i>
+                    Desactivado
+                    {% endif %}
+
+                  </td>
+                  <td>
+                    {% if not users.estado_perm %}
+
+                    <a data-toggle="modal" data-target="#myModal1" data-id="" data-href="{% url 'perm_switch' users.pk %}" data-pestana_nom="Confirmar activación de {{users.Nombre}} " data-tipo="Aprobación"><span class="btn btn-primary" > Activar </span></a>
+
+                    <a data-toggle="" data-target="" data-id=""><span class="btn btn-primary disabled">  Desactivar </span></a>
+
+                    {% elif users.estado_perm %}
+                    <a data-toggle="" data-target="" data-id=""><span class="btn btn-primary disabled" > Activar </span></a>
+
+                    <a data-toggle="modal" data-target="#myModal1" data-id="" data-href="{% url 'perm_switch' users.pk %}" data-pestana_nom="Confirmar desactivación de {{users.Nombre}} " data-tipo="eliminacion"><span class="btn btn-primary">  Desactivar </span></a>
+                    
+                    {% endif %}
+                    
+                  </td>
+                {% comment %}
+                <td>
+                  <a href= "{% url 'perfil_u' users.pk %}"><span class="btn btn-primary" > ir</span></a>
+                </td>
+                {% endcomment %}
+                </tr>
+
+                {% endfor %}
+
+                {% comment %}
+                <tr>
+                  <td>Trident</td>
+                  <td>Internet
+                    Explorer 4.0
+                  </td>
+                  <td>Win 95+</td>
+                  <td> 4</td>
+                  <td>C</td>                  
+                </tr>
+                <tr>
+                  <td>Trident</td>
+                  <td>Internet
+                    Explorer 5.0
+                  </td>
+                  <td>Win 95+</td>
+                  <td>5</td>
+                  <td>X</td>
+                </tr>
+                {% endcomment %}
+              </tbody>
+              <tfoot>
+                {% comment %}
+                <tr>
+                  <th>Rendering engine</th>
+                  <th>Browser</th>
+                  <th>Platform(s)</th>
+                  <th>Engine version</th>
+                </tr>
+                {% endcomment %}
+              </tfoot>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div>
+  <!-- /.container-fluid -->
+</section>
+
+
+
+
+
+<div class="container-modal">
+  <div class="modal fade" id="myModal1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h4 class="modal-title text-center fnegr" id="text-mod1">Notificacion de f</h4>
+
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+
+        <div class="modal-body" id="popupb">
+          <form accept-charset="UTF-8" method='post' id="ProblemForm" dataP-url="" name="amxj">
+
+            <fieldset class="unalin">
+
+              {% csrf_token %}
+
+
+              <div class="col-md-6 unalin2">
+                <button class="btn btn-lg btn-block" type="submit" id="enviof-1">Si</button>
+
+              </div>
+              <div class="col-md-6 unalin2">
+                <button type="button" class="btn btn-lg btn-block" data-dismiss="modal">No</button>
+
+              </div>
+
+
+
+            </fieldset>
+            <br>
+
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+{% endblock %}
+

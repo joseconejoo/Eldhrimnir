@@ -43,7 +43,7 @@ Formacion Critica
       <!-- check if user is profesor -->
       {% if user.nivelusu.nivel_usu.nivel_num == 4 %}
       {% if allow_anadir_eval %}
-      <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href=" {% url 'carga_evaluaciones' materia.pk %} " data-pestana_nom="Agregar Evaluación2" ><span class="fa fa-plus" id="iconB"></span> Agregar Evaluación
+      <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href=" {% url 'carga_evaluaciones' materia.pk %} " data-pestana_nom="Agregar Evaluación" ><span class="fa fa-plus" id="iconB"></span> Agregar Evaluación
       </a>
       {% else %}
 
@@ -91,6 +91,13 @@ Formacion Critica
         {% for evaluacion in evaluaciones %}
         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
           <div class="card bg-light col-md-11">
+            {% if evaluacion.cargada %}
+            <div class="ribbon-wrapper ribbon-lg">
+              <div class="ribbon bg-success text-lg">
+                Cargada
+              </div>
+            </div>
+            {% endif %}
             <div class="card-header text-muted border-bottom-0">
               Evaluación {{ forloop.counter }}
             </div>
@@ -118,7 +125,8 @@ Formacion Critica
                   <a class="btn btn-primary redondear_borde blancColor buttoncenter" data-toggle="modal" data-target="#myModal2" data-href=" {% url 'carga_eval' evaluacion.pk materia.pk %} " data-pestana_nom="Carga de Notas nº{{forloop.counter}}" data-ponderacion="{{ evaluacion.ponderacion }}"><span class="fa fa-plus0" id="iconB"></span> Cargar notas
                   </a>
                   {% else %}
-                  <span class="buttoncenter" data-toggle="tooltip" data-placement="top" title=" Se podra cargar el {{evaluacion.fecha}} y 5 dias posteriores "> 
+
+                  <span class="buttoncenter" data-toggle="tooltip" data-placement="top" title=" {{evaluacion.tooltip_title}} "> 
                     <a class="btn btn-primary redondear_borde blancColor disabled1 disabled buttoncenter" data-target="#" data-href="" data-pestana_nom="Agregar Evaluación" title="aun no"><span class="fa fa-plus0" id="iconB"></span> Cargar notas
                     </a>
                   </span>
@@ -180,6 +188,7 @@ Formacion Critica
         {% comment %}
         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
           <div class="card bg-light">
+
             <div class="card-header text-muted border-bottom-0">
               Evaluación 1
             </div>
@@ -680,49 +689,6 @@ Formacion Critica
 </section>
 {% endblock %}
 {% block jsend %}
-<!-- begin alerts -->
-{% if messages %}
-{% comment %}
-<ul class="messages">
-  {% endcomment %}
-
-  {% for message in messages %}
-  {% if message.tags == 'success' %}
-    <script type="text/javascript"> 
-      console.log('{{message}}');
-      $(document).Toasts('create', {
-        class: 'bg-success', 
-        title: 'Hecho',
-        delay: 750,
-        //subtitle: '',
-        body: '{{message}}'
-      })
-    </script>
-  {% endif %}
-
-  {% if message.tags == 'error' %}
-    <script type="text/javascript"> 
-      console.log('{{message}}');
-      $(document).Toasts('create', {
-        class: 'bg-danger', 
-        title: 'Error',
-        delay: 750,
-        //subtitle: '',
-        body: '{{message}}'
-      })
-    </script>
-  {% endif %}
-
-  {% comment %}
-  <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-  {% endcomment %}
-  {% endfor %}
-
-  {% comment %}
-</ul>
-{% endcomment %}
-{% endif %}
-<!-- end alerts -->
 
 <!-- start js eval max ponderacion -->
 <script type="text/javascript">

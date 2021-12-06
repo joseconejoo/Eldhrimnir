@@ -50,7 +50,13 @@ Cargo de control de estudios
                     
                   </td>
                   {% if usuario1x.username %}
-                  <td>{{usuario1x.username|intcomma}}</td>
+                  <td>
+
+                    {{usuario1x.username|intcomma}}
+
+                    <br>
+                    <a class="btn btn-primary blancColor" data-toggle="modal" data-target="#myModal3" data-href="{% url 'usu_add_ctrl_estud' %}" data-pestana_nom="Cambiar {{usuario1x.cargo}}" data-switch1 = '1'> Cambiar {{usuario1x.cargo1 }}</a>
+                  </td>
                   
                   {% else %}
                   <td>
@@ -343,6 +349,10 @@ Cargo de control de estudios
                 {% if forloop.counter == 3%}
                 {{field|login3:''}} 
                 {% endif %}
+                
+                
+
+
                 
                 {% comment %}
                 {% if field.help_text %}

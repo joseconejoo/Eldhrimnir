@@ -34,10 +34,12 @@ urlpatterns = [
     path('lista/mis/estudiantes', views.lista3_estud_list, name = 'lista3_estud_list' ),
     path('lista/todos_los/profesores', views.lista4_estud_list, name = 'lista4_estud_list' ),
     path('lista/todos_los/estudiantes', views.lista5_estud_list, name = 'lista5_estud_list' ),
+    path('lista/todos_los/permisos', views.lista6_permisos, name = 'lista6_permisos' ),
     
-
     path('api/profesor/materia_add_eval/num_eval/<int:pk_eval>/<int:pk_materia>/materia', views.carga_eval, name= 'carga_eval' ),
     path('api/usuadd/<int:type1>/<int:pk>/<int:pk_materia>', views.usu_add, name='usu_add'),
+    path('api/perm_switch/<int:pk_perm>', views.perm_switch, name='perm_switch'),
+    
     
     path('ajax/user_exist/', views.verificiar_usuario, name='verificiar_usuario'),
 ]

@@ -6,7 +6,7 @@
 {% block titu_tabla %}
 
 <br>
-<div class="text-center">
+<div class="text-center printarea2">
   <div class="col-md-12">
     {% if usuario_q.datos1.nombre %}
     <h1>{{usuario_q.datos1.nombre}} {{usuario_q.datos1.apellido}}</h1>
@@ -25,6 +25,7 @@
 <section class="content">
 
   <div class="buttonBlockDiv">
+    <a id="exportPdf" class="btn btn-danger redondear_borde blancColor" data-toggle="" data-target="" data-href="" data-pestana_nom="Agregar Estudiante" data-switch1 = '0' ><span class="fa fa-book" id="iconB"></span> Exportar PDF</a>
 
   </div>
   <br>
@@ -35,7 +36,7 @@
           <!-- /.card-header -->
 
           <div class="card-body">
-            <table id="example1" class="table table-bordered table-striped">
+            <table id="example1" class="table table-bordered table-striped printarea">
               <thead>
                 <tr>
                   <th>Materia</th>
@@ -450,6 +451,66 @@
 
 
 {% block jsend2 %}
+<!-- PDF export -->
+<script type="text/javascript">
+
+  $("#exportPdf ").click(function () {
+      //Hide all other elements other than printarea.
+      /*
+      var divContents = $("#example1").html();
+      var printWindow = window.open('', '', 'height=900,width=1360');
+      printWindow.document.write(divContents);
+      printWindow.document.close();
+      printWindow.print();
+      */
+      // print one div html
+      // with jquery maybe
+
+      to_hide = $(".content")
+      to_hide2 = $("footer")
+      //Copy the element you want to print to the print-me div.
+      $(".printarea2").eq(0).clone().appendTo("#print-me");
+      $(".printarea").eq(0).clone().appendTo("#print-me");
+      //$('body').width(1000)
+      
+      //Apply some styles to hide everything else while printing.
+      to_hide.eq(0).addClass("printing");
+      to_hide2.eq(0).addClass("printing");
+      
+      // show only that whats printing
+      $('#print-me').show()
+      //Print the window.
+      window.print();
+      //Restore the styles.
+      to_hide.removeClass("printing");
+      to_hide2.removeClass("printing");
+      //Clear up the div.
+      $("#print-me").empty();
+
+      /*
+      $(".desapTemp").css("display","none");
+      $(".firmaax").css("display","table-cell");
+      var colorAnte = $("#dvContainer").css('color');
+      $(".colorcitonegropapa").css("color","black");
+      
+      $("#dvContainer").css("dispay","none");
+      $("#dvContainer").show();
+      window.print();
+      var colorT = (colorAnte).toString();
+      console.log(colorT);
+      var cssT ="'css:"
+      var cssfT ="'"
+      var concaT = cssT.concat(colorT,cssfT);
+      console.log(concaT);
+      //$(".colorcitonegropapa").style.color = "blue";
+      $(".colorcitonegropapa").attr('style','css:rgb(33, 37, 41)!important!immportant');
+      $(".desapTemp").css("display","");
+      $(".firmaax").css("display","none");
+      */
+
+  });  
+</script>
+<!-- end PDF export -->
 
 <script type="text/javascript">
 
@@ -618,4 +679,5 @@
   setTimeout(checkUser.bind(userid2, url2, field3, field4, submit3, submit4), 500);
   */
 </script>
+
 {% endblock %}

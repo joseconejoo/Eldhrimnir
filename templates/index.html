@@ -163,7 +163,14 @@
                 </p>
               </a>
             </li>
-            
+            <li class="nav-item">
+              <a href="{% url 'lista6_permisos' %}" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p class="too_long" >
+                  Opciones de Coordinador
+                </p>
+              </a>
+            </li>
           {% endif %}
 
           {% if user.nivelesnum.ctrl_est1 or user.nivelusu.nivel_usu.nivel_num == 1 %}
@@ -326,9 +333,111 @@
 </script>
 {% endif %}
 
+
+
+
+
+
+
+<!-- begin alerts -->
+{% if messages %}
+{% comment %}
+<ul class="messages">
+  {% endcomment %}
+
+  {% for message in messages %}
+  {% if message.tags == 'success' %}
+    <script type="text/javascript"> 
+      console.log('{{message}}');
+      $(document).Toasts('create', {
+        class: 'bg-success', 
+        title: 'Hecho',
+        delay: 750,
+        //subtitle: '',
+        body: '{{message}}'
+      })
+    </script>
+  {% endif %}
+
+  {% if message.tags == 'error' %}
+    <script type="text/javascript"> 
+      console.log('{{message}}');
+      $(document).Toasts('create', {
+        class: 'bg-danger', 
+        title: 'Error',
+        delay: 750,
+        //subtitle: '',
+        body: '{{message}}'
+      })
+    </script>
+  {% endif %}
+
+  {% comment %}
+  <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+  {% endcomment %}
+  {% endfor %}
+
+
+  <!-- form.errors -->
+  {% if form.errors %}
+    <script type="text/javascript"> 
+      
+      var varka = '{{form.errors}}';
+
+      varka = varka.replace(/__all__/g, '')
+
+      console.log('{{message}}');
+      $(document).Toasts('create', {
+        class: 'bg-danger', 
+        title: 'Error',
+        delay: 750,
+        //subtitle: '',
+        body: varka
+      })
+    </script>
+  {% endif %}
+
+
+  {% comment %}
+</ul>
+{% endcomment %}
+{% endif %}
+<!-- end alerts -->
+
+
+
+
+<!-- Js check if button click -->
+<script type="text/javascript">
+    
+  clicked= 0
+  $('[type="submit"]').click(function(){
+    console.log($('button[type="submit"]') );
+    
+    //$(this).find('button[type="submit"]').attr('disabled','disabled');
+    $(this).attr('disabled','disabled');
+    button_this = $(this)
+    if (clicked == 0 ) {
+      clicked = 1
+      setTimeout(function() {
+          button_this.removeAttr('disabled');
+          clicked = 0
+      }, 4000);
+    }
+
+
+
+  }); 
+
+</script>
+<!-- end Js check if button click -->
+
+
 {% block jsend %}
 {% endblock %}
 {% block jsend2 %}
 {% endblock %}
 </body>
+<div id="print-me" class="print-me">
+</div>
 </html>

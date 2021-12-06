@@ -54,6 +54,13 @@ class Tipo_Materia(models.Model):
 	def __str__(self):
 	    return str((self.Nombre))
 
+class permisos_bd(models.Model):
+	id1 = models.IntegerField(primary_key = True, unique = True)
+	nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
+	Nombre = models.CharField(validators = [nombreVer], max_length = 200)
+	estado_perm = models.BooleanField(default=False)
+	def __str__(self):
+	    return str((self.Nombre))
 class materia_seccion(models.Model):
 	nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
 	materia_nom = models.CharField(validators=[nombreVer],max_length=200)

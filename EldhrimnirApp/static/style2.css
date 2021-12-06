@@ -215,3 +215,22 @@ input[type=number] {
     color: #212529;
     text-decoration: none;
 }
+
+/* printing */
+.printing{
+  display: none;
+}
+@media print {
+  /*
+  body {
+    width: 1000px;
+  }
+  tr td{
+    display: block!important;
+  }
+  tr th{
+    display: block!important;
+  }
+  */
+}
+/* end printing */

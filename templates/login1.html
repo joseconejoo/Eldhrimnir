@@ -14,9 +14,29 @@
 	<h1>Aldea Universitaria</h1>
 	
 <form class="form" method="post">
+		{% if form.errors %}
+		<div class="to_show_message">
+			<div class="alert col-md-3">
+			  <span class="closebtn">&times;</span>  
+			  <strong>Error</strong> 
+			  <p id="alert1text"> 
+			  </p>
+			</div>			
+		</div>
+
+		<script type="text/javascript">
+			var varka = '{{form.errors}}';
+
+			varka = varka.replace(/__all__/g, '')
+
+			document.getElementById("alert1text").innerHTML = varka;
+
+		</script>
+		{% endif %}
 		{% for field in form %}
 
 		{% csrf_token %}
+
 		<div class="errores">
 		</div>
 		{% if forloop.counter == 1%}
@@ -28,6 +48,8 @@
 		{% endif %}
 
 		<p></p>
+
+
 		{% if field.help_text %}
 		<p class="help">{{ field.help_text|safe }}</p>
 		{% endif %}
@@ -43,4 +65,9 @@
 	</form>
 	<h5 class="credits"> <a href="#">Créditos</a> </h5>
 </div>
+
+
+
 {% endblock %}
+
+
