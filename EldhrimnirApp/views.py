@@ -420,7 +420,7 @@ def usu_add(request, type1, pk, pk_materia):
 		username = request.POST.get('cedula', None)
 		usu_ex = User.objects.filter(username__exact=username)
 
-		if (usu_ex.exists() ):
+		if ((usu_ex.exists()) and (type1 == 2)):
 			usu_ex2 = usu_ex[0]
 			# check if user has another level
 			user_has_level = check_user_level_exists2(usu_ex2)
@@ -454,12 +454,12 @@ def usu_add(request, type1, pk, pk_materia):
 			if (type1 == 1):
 				#modulo de anadir materias
 				materias_list = request.POST.getlist('choices')
-				est_add_materia(user_to_register, materias_list)
+				est_add_materia(user_to_register, materias_list, request)
 
 			if (type1 == 2):
 				#modulo de anadir profesor a materia
 				prof_add_materia(user_to_register ,pk_materia)
-				
+
 			messages.success(request, 'Cambio realizado exitosamente')
 			return redirect(seccion_carrera,pk=pk)
 		elif(User.objects.filter(username=username).exists()):
@@ -470,7 +470,7 @@ def usu_add(request, type1, pk, pk_materia):
 			if (type1 == 1):
 				#modulo de anadir materias
 				materias_list = request.POST.getlist('choices')
-				est_add_materia(user_to_register, materias_list)
+				est_add_materia(user_to_register, materias_list, request)
 				#Modulo para poner nivel de usuario al de estudiante
 				#POR HACER
 				nivel = NivelesNum2.objects.get(pk=nivel_estudiante)
@@ -945,9 +945,23 @@ def lista5_estud_list(request):
 def lista6_permisos(request):
 	#coordinador
 	users = permisos_bd.objects.all()
-	titulo = 'Lista de permisos'
+	titulo = 'Lista de permisos y Cambio de periodo'
 
 	return render(request, 'Coordinator/usu_accept_2.html',{'titulo':titulo, 'users1':users})
+def periodo_cambio(request):
+	secciones = carrera_seccion.objects.all()
+	if (secciones):
+		secciones.delete()
+	"""
+	for seccion in secciones:
+		seccion.delete()
+	"""
+	search = [nivel_estudiante, nivel_profesor]
+	usuarios_nivel = NivelUsu.objects.filter(nivel_usu__in= search)
+	if (usuarios_nivel):
+		usuarios_nivel.delete()
+	messages.success(request, 'Cambio realizado exitosamente')
+	return redirect('lista6_permisos')
 
 def perm_switch(request, pk_perm):
 	#coordinador

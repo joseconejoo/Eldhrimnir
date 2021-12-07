@@ -264,7 +264,7 @@ Sección {{seccion.seccion_num}}
                     
                     <td>
                       <div class="icheck-primary d-inline materias_column" style="grid-row:{{forloop.counter|subC:1}}; ">
-                        <input type="checkbox" value="{{materia.id}}" name="choices" id="checkboxPrimary{{forloop.counter}}">
+                        <input type="checkbox" value="{{materia.id}}" name="choices" id="checkboxPrimary{{forloop.counter}}" checked="">
                         <label for="checkboxPrimary{{forloop.counter}}">
                         </label>
                         <span> {{materia.materia_nom}} </span>
@@ -275,7 +275,7 @@ Sección {{seccion.seccion_num}}
 
                     <td>
                       <div class="icheck-primary d-inline materias_column" style="grid-row:{{forloop.counter}}; ">
-                        <input type="checkbox" value="{{materia.id}}" name="choices" id="checkboxPrimary{{forloop.counter}}">
+                        <input type="checkbox" value="{{materia.id}}" name="choices" id="checkboxPrimary{{forloop.counter}}" checked="">
                         <label for="checkboxPrimary{{forloop.counter}}">
                         </label>
                         <span> {{materia.materia_nom}} </span>
