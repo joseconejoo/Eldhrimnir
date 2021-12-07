@@ -12,7 +12,14 @@ PNF(S) de las Aldeas
 
 <section class="content">
   <div class="buttonBlockDiv">
+    {% if permiso_add1 %}
     <a class="btn btn-primary redondear_borde blancColor" data-toggle="modal" data-target="#myModal1" data-href="{% url 'carreras_list' %}" data-pestana_nom="Añadir Carrera"><span class="fa fa-plus" id="iconB"></span> Agregar Carrera</a>
+    {% else %}
+    <span tabindex="0" data-toggle="tooltip" data-placement="top" title="Necesita permiso para esta acción  "> 
+      <a class="btn btn-primary redondear_borde blancColor disabled1 disabled" data-toggle="" data-target="" data-href="" data-pestana_nom=""><span class="fa fa-plus" id="iconB"></span> Agregar Carrera</a>
+    </span>
+    {% endif %}
+    
   
   </div>
   <br>

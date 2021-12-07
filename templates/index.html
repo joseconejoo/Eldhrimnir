@@ -86,7 +86,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="#" class="brand-link">
-      <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+      <img src="{% static 'css2/img/aldea_universitaria.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
       <span class="brand-text font-weight-light">La Aldea</span>
     </a>
@@ -409,18 +409,31 @@
 
 <!-- Js check if button click -->
 <script type="text/javascript">
-    
+  /*
+  $(document).on('submit',function(){
+     alert('hola')
+  });
+  */
+
   clicked= 0
+  //$('[type="submit"]').click(function(){
   $('[type="submit"]').click(function(){
-    console.log($('button[type="submit"]') );
     
-    //$(this).find('button[type="submit"]').attr('disabled','disabled');
-    $(this).attr('disabled','disabled');
     button_this = $(this)
+    //$(this).find('button[type="submit"]').attr('disabled','disabled');
+    setTimeout( () => {
+      button_this.attr('disabled','disabled');
+    }) // No need to set a duration for the timeout
+
+    //$(this).removeAttr('type');
+    
     if (clicked == 0 ) {
       clicked = 1
       setTimeout(function() {
           button_this.removeAttr('disabled');
+          //button_this.attr('type','submit');
+          //button_this.prop("disabled", true);
+
           clicked = 0
       }, 4000);
     }

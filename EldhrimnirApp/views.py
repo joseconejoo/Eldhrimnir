@@ -36,6 +36,18 @@ def check_user_level_exists(usu_ex):
 		result = True
 	return result
 
+def check_user_level_exists2(usu_ex):
+	nivel_usu1x = NivelUsu.objects.filter(user = usu_ex)
+	result = False
+	if (nivel_usu1x.exists() ):
+		nivel_usu1x = nivel_usu1x[0]
+		if nivel_usu1x.nivel_usu.pk == nivel_profesor :
+			result = False
+		else:
+			result = True
+	if (usu_ex.is_superuser):
+		result = True
+	return result
 teorica = Tipo_Materia.objects.filter(pk=1)[0].num_eval_min
 practica = Tipo_Materia.objects.filter(pk=2)[0].num_eval_min
 teoricayprac = Tipo_Materia.objects.filter(pk=3)[0].num_eval_min
@@ -306,7 +318,10 @@ def carreras_list(request):
 		form_add = carreras_add()
 		carreras1 = []
 
-		return render(request, 'CtrlEstud/carreras_list.html',{'users1':carreras_q,'form1':form_add})
+		permiso_a_ctrl_seccion  = get_perm(1)
+		permiso_add1 = permiso_a_ctrl_seccion.estado_perm
+
+		return render(request, 'CtrlEstud/carreras_list.html',{'permiso_add1':permiso_add1, 'users1':carreras_q,'form1':form_add})
 
 def carrera_detal(request, pk):
 	# control de estudios
@@ -334,7 +349,11 @@ def carrera_detal(request, pk):
 			else:
 				seccion.alumnos = 0
 		form = carrera_seccion_F()
-		return render(request, 'CtrlEstud/carrera_detal.html', {'users1':secciones_q,'carrera': carreras_q,'form1':form})
+
+		permiso_a_ctrl_seccion  = get_perm(1)
+		permiso_add1 = permiso_a_ctrl_seccion.estado_perm
+
+		return render(request, 'CtrlEstud/carrera_detal.html', {'permiso_add1':permiso_add1, 'users1':secciones_q,'carrera': carreras_q,'form1':form})
 
 def seccion_carrera(request, pk):
 	# control de estudios
@@ -365,8 +384,11 @@ def seccion_carrera(request, pk):
 		form = materia_seccion_F()
 		form2 = DatosAddF()
 		#form3 = materias_listF()
+
+		permiso_a_ctrl_estudiante = get_perm(2)
+		permiso_add1 = permiso_a_ctrl_estudiante.estado_perm
 		
-		return render(request, 'CtrlEstud/seccion_carrera.html', {'form2':form2,'users1':materias_q,'form1':form,'seccion':secciones_q})
+		return render(request, 'CtrlEstud/seccion_carrera.html', {'permiso_add1':permiso_add1, 'form2':form2,'users1':materias_q,'form1':form,'seccion':secciones_q})
 
 
 def verificiar_usuario(request):
@@ -396,7 +418,17 @@ def usu_add(request, type1, pk, pk_materia):
 
 		#username = request.GET.get('username', None)
 		username = request.POST.get('cedula', None)
-		usu_ex = User.objects.filter(username__exact=username).exists()
+		usu_ex = User.objects.filter(username__exact=username)
+
+		if (usu_ex.exists() ):
+			usu_ex2 = usu_ex[0]
+			# check if user has another level
+			user_has_level = check_user_level_exists2(usu_ex2)
+
+			if (user_has_level):
+				messages.error(request, 'El usuario {} ya tiene un nivel asignado'.format(usu_ex2.username))
+				return redirect(seccion_carrera,pk=pk)
+
 
 		# requesting fields
 
@@ -427,7 +459,8 @@ def usu_add(request, type1, pk, pk_materia):
 			if (type1 == 2):
 				#modulo de anadir profesor a materia
 				prof_add_materia(user_to_register ,pk_materia)
-
+				
+			messages.success(request, 'Cambio realizado exitosamente')
 			return redirect(seccion_carrera,pk=pk)
 		elif(User.objects.filter(username=username).exists()):
 			#form special
@@ -456,7 +489,8 @@ def usu_add(request, type1, pk, pk_materia):
 				nivel_usu1x.save()
 			else:
 				NivelUsu.objects.create(user=user_to_register , nivel_usu= nivel )
-				
+
+			messages.success(request, 'Cambio realizado exitosamente')
 			return redirect(seccion_carrera,pk=pk)
 		return redirect(seccion_carrera,pk=pk)
 
@@ -598,7 +632,7 @@ def carga_evaluaciones(request, pk):
 				max_value = 30
 			else:
 				max_value = (-total_percent) + 100
-				
+
 			# end validation nota
 			if (total_percent > 100 ):
 				messages.error(request, 'Porcentaje total no puede ser mayor al 100 %')

@@ -62,8 +62,9 @@ class permisos_bd(models.Model):
 	def __str__(self):
 	    return str((self.Nombre))
 class materia_seccion(models.Model):
-	nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
-	materia_nom = models.CharField(validators=[nombreVer],max_length=200)
+	#nombreVer = RegexValidator(regex=r'^[a-zA-ZñáéíóúäëïöüÑàèìòù\s]+$', message="Solo letras para el nombre por favor.")
+	#materia_nom = models.CharField(validators=[nombreVer],max_length=200)
+	materia_nom = models.CharField(max_length=200)
 	seccion = models.ForeignKey(carrera_seccion, on_delete=models.CASCADE, blank=True)
 	#profesor = models.ForeignKey('auth.User', on_delete= models.CASCADE, null=True, related_name = 'profesors')
 	user_edit = models.ForeignKey('auth.User',on_delete=models.SET_NULL, blank=True, related_name = 'user_edits', null = True)

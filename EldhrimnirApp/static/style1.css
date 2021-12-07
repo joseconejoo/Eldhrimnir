@@ -32,3 +32,12 @@
 .closebtn:hover {
   color: black;
 }
+/* image login */
+.image_1 {
+  width: 4rem;
+}
+
+.unalin_login {
+  display: inline-flex;
+}
+/* end image login */

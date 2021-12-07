@@ -1,5 +1,6 @@
 {% extends 'index2.html' %}
 {% load humanize %}
+{% load static %}
 {% load myfilters %}
 
 
@@ -11,7 +12,12 @@
 {% block content1 %}
 
 <div class="container">
-	<h1>Aldea Universitaria</h1>
+	<div class="" >
+		<img class="image_1" src="{% static 'css2/img/aldea_universitaria.png' %}">
+
+		<h1>Aldea Universitaria</h1>		
+	</div>
+
 	
 <form class="form" method="post">
 		{% if form.errors %}
